@@ -1,0 +1,629 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050403">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>BandSync Display</title>
+
+<style>
+:root{
+  --gold:#d6a258;
+  --gold2:#f2d19a;
+  --text:#f7f1e8;
+  --muted:#8d8174;
+  --green:#67d188;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;height:100%;min-height:100%;overflow:hidden;
+  background:
+    radial-gradient(circle at 50% -8%,rgba(198,128,51,.15),transparent 30%),
+    linear-gradient(180deg,#070503 0%,#030201 100%);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif
+}
+body{display:flex;min-height:100dvh}
+.screen{
+  width:100%;height:100dvh;
+  padding:calc(24px + env(safe-area-inset-top)) 22px calc(24px + env(safe-area-inset-bottom));
+  display:flex;flex-direction:column;overflow:hidden;position:relative;
+  isolation:isolate
+}
+.screen:before{
+  content:"";position:absolute;inset:0;z-index:-3;pointer-events:none;
+  background:
+    radial-gradient(ellipse at 50% 50%,rgba(212,151,68,.08),transparent 34%),
+    linear-gradient(115deg,transparent 0 32%,rgba(255,255,255,.012) 42%,transparent 53% 100%)
+}
+.screen:after{
+  content:"";position:absolute;left:-12%;right:-12%;top:58%;height:220px;z-index:-2;
+  background:radial-gradient(ellipse at center,rgba(215,160,79,.16),transparent 56%);
+  filter:blur(18px);pointer-events:none
+}
+.top{
+  display:flex;justify-content:center;align-items:center;
+  color:#c7a36d;font-size:10px;letter-spacing:.30em;text-transform:uppercase;
+  font-weight:690
+}
+.status{
+  position:absolute;right:18px;top:calc(23px + env(safe-area-inset-top));
+  font-size:8px;letter-spacing:.10em;color:#c36c62;
+  padding:5px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.035)
+}
+.status.on{color:var(--green);border-color:rgba(103,209,136,.10)}
+.status.on:before{
+  content:"";display:inline-block;width:5px;height:5px;border-radius:50%;
+  background:var(--green);margin-right:5px;box-shadow:0 0 8px rgba(103,209,136,.65)
+}
+.center{
+  flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;
+  text-align:center;position:relative;z-index:1
+}
+.label{
+  font-size:11px;letter-spacing:.34em;color:#d0ad75;font-weight:680
+}
+.spark{
+  width:96px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(230,181,109,.95),transparent);
+  margin:13px 0 24px;
+  box-shadow:0 0 12px rgba(214,162,88,.42)
+}
+.current{
+  font-size:clamp(50px,13vw,84px);
+  line-height:.98;font-weight:790;letter-spacing:-.04em;
+  color:#f3d39d;
+  text-shadow:
+    0 0 34px rgba(214,162,88,.10),
+    0 1px 0 rgba(255,255,255,.05);
+  max-width:92vw;overflow-wrap:anywhere;
+  text-wrap:balance
+}
+.wave{
+  width:min(86vw,560px);height:76px;margin:40px 0 38px;position:relative;opacity:.82
+}
+.wave:before{
+  content:"";position:absolute;left:0;right:0;top:37px;height:1px;
+  background:linear-gradient(90deg,transparent 0%,rgba(214,162,88,.18) 12%,rgba(235,187,113,.90) 49%,rgba(214,162,88,.18) 88%,transparent 100%);
+  box-shadow:
+    0 -9px 0 rgba(214,162,88,.08),
+    0 9px 0 rgba(214,162,88,.08),
+    0 -18px 0 rgba(214,162,88,.035),
+    0 18px 0 rgba(214,162,88,.035);
+  transform:skewY(-3.2deg);
+  filter:drop-shadow(0 0 8px rgba(214,162,88,.16))
+}
+.wave:after{
+  content:"";position:absolute;left:12%;right:12%;top:37px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(238,190,119,.62),transparent);
+  transform:skewY(3.2deg);opacity:.68
+}
+.nextlabel{
+  font-size:10px;letter-spacing:.28em;color:#c2a06e;font-weight:700
+}
+.next{
+  font-size:clamp(27px,7.2vw,43px);
+  line-height:1.08;font-weight:640;margin-top:12px;
+  color:#d9c2a1;max-width:90vw;overflow-wrap:anywhere;text-wrap:balance
+}
+.wait{color:#766d63;text-shadow:none}
+.bottom{
+  display:flex;justify-content:center;align-items:center;
+  color:#5e574f;font-size:8px;letter-spacing:.18em;
+  padding-bottom:2px
+}
+@media(max-height:700px){
+  .wave{margin:26px 0 26px;height:58px}
+  .wave:before,.wave:after{top:29px}
+  .current{font-size:clamp(42px,11.5vw,68px)}
+}
+
+/* PREMIUM DISPLAY PASS 4 */
+body{background:
+radial-gradient(circle at 50% -8%,rgba(199,130,52,.17),transparent 30%),
+linear-gradient(180deg,#060402,#020201)!important}
+.screen:before{background:
+radial-gradient(ellipse at 50% 48%,rgba(215,158,76,.09),transparent 36%),
+linear-gradient(115deg,transparent 0 33%,rgba(255,255,255,.012) 43%,transparent 54% 100%)!important}
+.top{color:#c5a26d!important}
+.label{color:#d7b47b!important}
+.spark{width:112px!important;background:linear-gradient(90deg,transparent,rgba(242,198,127,.96),transparent)!important;
+box-shadow:0 0 14px rgba(215,161,83,.34),0 0 30px rgba(215,161,83,.08)!important}
+.current{color:#f7d9a7!important;font-weight:810!important;letter-spacing:-.045em!important;
+text-shadow:0 0 30px rgba(215,161,83,.12),0 1px 0 rgba(255,255,255,.06)!important}
+.nextlabel{color:#c2a06b!important}
+.next{color:#dfc9aa!important;font-weight:650!important}
+.wave{opacity:.92!important}
+.status{background:rgba(7,5,3,.35)!important;backdrop-filter:blur(12px)!important}
+
+
+.displayTools{
+  display:flex;
+  justify-content:center;
+  margin:0 0 14px;
+  position:relative;
+  z-index:2;
+}
+.wakeControl{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid rgba(214,162,88,.12);
+  background:rgba(12,10,8,.72);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  cursor:pointer;
+  user-select:none;
+}
+.wakeControl input{
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+}
+.wakeBox{
+  width:20px;height:20px;
+  border-radius:6px;
+  border:1px solid rgba(242,209,154,.28);
+  background:#0b0907;
+  display:grid;
+  place-items:center;
+  flex:0 0 auto;
+}
+.wakeControl input:checked + .wakeBox{
+  background:linear-gradient(180deg,#e1b66e,#b87834);
+  border-color:rgba(242,209,154,.52);
+  box-shadow:0 0 14px rgba(214,162,88,.18);
+}
+.wakeControl input:checked + .wakeBox:after{
+  content:"✓";
+  color:#140d06;
+  font-size:13px;
+  font-weight:900;
+}
+.wakeText{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  text-align:left;
+}
+.wakeText strong{
+  font-size:9px;
+  letter-spacing:.11em;
+  color:#d4b681;
+}
+.wakeText small{
+  font-size:9px;
+  color:#766d63;
+}
+.alertOverlay{
+  position:fixed;
+  inset:0;
+  z-index:999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:28px;
+  background:
+    radial-gradient(circle at 50% 48%,rgba(209,147,65,.20),transparent 34%),
+    rgba(3,2,1,.96);
+  opacity:0;
+  visibility:hidden;
+  transform:scale(1.015);
+  transition:opacity .18s ease,transform .18s ease,visibility .18s;
+}
+.alertOverlay.show{
+  opacity:1;
+  visibility:visible;
+  transform:scale(1);
+}
+.alertInner{
+  width:min(92vw,760px);
+  text-align:center;
+}
+.alertEyebrow{
+  font-size:11px;
+  letter-spacing:.28em;
+  color:#c89f65;
+  font-weight:760;
+  margin-bottom:18px;
+}
+.alertText{
+  font-size:clamp(42px,11vw,86px);
+  line-height:1.02;
+  font-weight:820;
+  letter-spacing:-.035em;
+  color:#f3d39d;
+  text-wrap:balance;
+  text-shadow:0 0 34px rgba(214,162,88,.12);
+}
+
+
+.votePanel{
+  width:min(90vw,520px);
+  margin-top:28px;
+  padding:14px 15px 12px;
+  border-radius:18px;
+  border:1px solid rgba(214,162,88,.13);
+  background:rgba(11,9,7,.72);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+.votePanel.hidden{display:none}
+.voteHeader{
+  font-size:9px;letter-spacing:.18em;color:#b99b70;font-weight:720;
+  margin-bottom:10px;
+}
+.voteResultLine{
+  display:flex;justify-content:space-between;font-size:10px;
+  letter-spacing:.11em;font-weight:760;
+}
+.noText{color:#d1776d}.yesText{color:#70ca87}
+.voteResultLine b{font-size:13px;color:#eadfce;margin-left:4px}
+.displayVoteScale{
+  position:relative;height:9px;border-radius:99px;margin:9px 0 13px;
+  background:linear-gradient(90deg,#8c2e2b 0%,#b95d42 24%,#6d634e 50%,#609966 76%,#2e8550 100%);
+  box-shadow:inset 0 1px 4px rgba(0,0,0,.55);
+}
+.displayVoteKnob{
+  position:absolute;top:50%;left:50%;width:18px;height:18px;border-radius:50%;
+  transform:translate(-50%,-50%);
+  background:#f1d19a;border:2px solid #15100b;
+  box-shadow:0 0 14px rgba(241,209,154,.28);
+  transition:left .22s ease;
+}
+.voteButtons{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.voteBtn{
+  height:42px;border-radius:13px;font-size:11px;font-weight:820;letter-spacing:.05em;
+  background:#100d0a;border:1px solid rgba(255,255,255,.06);
+}
+.noBtn{color:#d98a80;border-color:rgba(192,82,72,.22)}
+.yesBtn{color:#83d59a;border-color:rgba(85,172,108,.22)}
+.voteBtn.selected{
+  box-shadow:inset 0 0 0 1px currentColor,0 0 18px rgba(255,255,255,.035);
+}
+.voteMine{
+  margin-top:8px;text-align:center;font-size:9px;color:#70675e;letter-spacing:.06em;
+}
+
+
+.alertClose{
+  position:absolute;
+  top:calc(18px + env(safe-area-inset-top));
+  right:18px;
+  width:58px;
+  height:58px;
+  border-radius:18px;
+  border:1px solid rgba(242,209,154,.20);
+  background:rgba(18,14,10,.84);
+  color:#f2d19a;
+  font-size:28px;
+  font-weight:500;
+  line-height:1;
+  display:grid;
+  place-items:center;
+  z-index:1001;
+  box-shadow:
+    0 10px 30px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.025);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+}
+.alertClose:active{
+  transform:scale(.96);
+  background:rgba(29,21,14,.94);
+}
+
+</style>
+
+</head>
+<body>
+<main class="screen">
+  <div class="top">UŽIVO OD: MASTER</div>
+  <div id="status" class="status">CONNECTING…</div>
+
+  <div class="center">
+    <div class="label">TRENUTNO</div>
+    <div class="spark"></div>
+    <div id="current" class="current wait">Čekam Master…</div>
+
+    <div class="wave"></div>
+
+    <div class="nextlabel">SLEDEĆA PESMA</div>
+    <div id="next" class="next">—</div>
+
+    <div id="votePanel" class="votePanel hidden">
+      <div class="voteHeader">GLASANJE ZA SLEDEĆU PESMU</div>
+      <div class="voteResultLine">
+        <span class="noText">PROTIV <b id="dNo">0</b></span>
+        <span class="yesText">ZA <b id="dYes">0</b></span>
+      </div>
+      <div class="displayVoteScale">
+        <i id="dVoteKnob" class="displayVoteKnob"></i>
+      </div>
+      <div class="voteButtons">
+        <button id="voteNoBtn" class="voteBtn noBtn">✕ PROTIV</button>
+        <button id="voteYesBtn" class="voteBtn yesBtn">✓ ZA</button>
+      </div>
+      <div id="voteMine" class="voteMine">Nisi glasao</div>
+    </div>
+  </div>
+
+  <div class="displayTools">
+  <label class="wakeControl">
+    <input id="wakeToggle" type="checkbox">
+    <span class="wakeBox"></span>
+    <span class="wakeText">
+      <strong>KEEP SCREEN AWAKE</strong>
+      <small id="wakeStatus">Tap to enable</small>
+    </span>
+  </label>
+</div>
+<div class="bottom">BANDSYNC · LIVE DISPLAY</div>
+</main>
+<div id="alertOverlay" class="alertOverlay" aria-live="assertive">
+  <button id="alertClose" class="alertClose" aria-label="Close message">✕</button>
+  <div class="alertInner">
+    <div class="alertEyebrow">MESSAGE FROM MASTER</div>
+    <div id="alertText" class="alertText">—</div>
+  </div>
+</div>
+
+<script>
+const NTFY_TOPIC="bandsync-3895bb890a4eb15dcaa9";
+const STREAM="https://ntfy.sh/"+NTFY_TOPIC+"/sse?since=12h";
+const LAST_KEY="bandsync_display_last_v3";
+const NTFY_URL="https://ntfy.sh/"+NTFY_TOPIC;
+const DEVICE_KEY="bandsync_vote_device_v1";
+const ALERT_SEEN_KEY="bandsync_alert_seen_v1";
+const $=id=>document.getElementById(id);
+
+let es=null;
+let pendingState=null;
+let flushTimer=null;
+let receivedAny=false;
+let alertTimer=null;
+let wakeLock=null;
+let lastAlertSeen=Number(localStorage.getItem(ALERT_SEEN_KEY)||0);
+let currentVoteId="";
+let voteMap={};
+let deviceId=localStorage.getItem(DEVICE_KEY)||"";
+if(!deviceId){ deviceId="d_"+Math.random().toString(36).slice(2)+"_"+Date.now().toString(36); localStorage.setItem(DEVICE_KEY,deviceId); }
+
+function setStatus(text,on=false){
+  $("status").textContent=text;
+  $("status").classList.toggle("on",on)
+}
+
+
+function voteCounts(){
+  let yes=0,no=0;
+  Object.values(voteMap).forEach(v=>{
+    if(v==="yes") yes++;
+    else if(v==="no") no++;
+  });
+  return {yes,no,total:yes+no}
+}
+function renderVotes(){
+  const panel=$("votePanel");
+  if(!panel) return;
+  if(!$("next").textContent || $("next").textContent==="—" || !currentVoteId){
+    panel.classList.add("hidden");
+    return;
+  }
+  panel.classList.remove("hidden");
+  const c=voteCounts();
+  $("dYes").textContent=c.yes;
+  $("dNo").textContent=c.no;
+  const pct=c.total ? (c.yes/c.total)*100 : 50;
+  $("dVoteKnob").style.left=pct+"%";
+  const mine=voteMap[deviceId]||"";
+  $("voteYesBtn").classList.toggle("selected",mine==="yes");
+  $("voteNoBtn").classList.toggle("selected",mine==="no");
+  $("voteMine").textContent=mine==="yes"?"Tvoj glas: ZA":mine==="no"?"Tvoj glas: PROTIV":"Nisi glasao";
+}
+async function sendVote(value){
+  if(!currentVoteId || (value!=="yes" && value!=="no")) return;
+  voteMap[deviceId]=value;
+  renderVotes();
+  try{
+    await fetch(NTFY_URL,{
+      method:"POST",
+      headers:{"Content-Type":"text/plain;charset=UTF-8"},
+      body:JSON.stringify({
+        type:"vote",
+        voteId:currentVoteId,
+        deviceId,
+        value,
+        updated:Date.now()
+      }),
+      cache:"no-store",
+      mode:"cors"
+    });
+    if(navigator.vibrate) navigator.vibrate(12);
+  }catch(e){
+    console.error("Vote send failed",e);
+  }
+}
+$("voteYesBtn").onclick=()=>sendVote("yes");
+$("voteNoBtn").onclick=()=>sendVote("no");
+
+function applyState(d,persist=true){
+  if(!d || typeof d!=="object") return;
+  $("current").textContent=d.current||"Čekam Master…";
+  $("current").classList.toggle("wait",!d.current);
+  $("next").textContent=d.next||"—";
+  const incomingVoteId=d.voteId||"";
+  if(incomingVoteId!==currentVoteId){
+    currentVoteId=incomingVoteId;
+    voteMap={};
+  }
+  renderVotes();
+  if(persist){
+    try{localStorage.setItem(LAST_KEY,JSON.stringify(d))}catch(e){}
+  }
+}
+
+function loadLocalFallback(){
+  try{
+    const d=JSON.parse(localStorage.getItem(LAST_KEY)||"null");
+    if(d) applyState(d,false)
+  }catch(e){}
+}
+
+
+function dismissAlert(){
+  if(alertTimer) clearTimeout(alertTimer);
+  alertTimer=null;
+  $("alertOverlay").classList.remove("show");
+}
+
+$("alertClose").onclick=dismissAlert;
+
+function showAlert(message,duration=3000){
+  const text=String(message||"").trim();
+  if(!text) return;
+
+  $("alertText").textContent=text;
+  $("alertOverlay").classList.add("show");
+
+  if(navigator.vibrate){
+    try{ navigator.vibrate([40,35,40]); }catch(e){}
+  }
+
+  if(alertTimer) clearTimeout(alertTimer);
+  alertTimer=setTimeout(()=>{
+    dismissAlert();
+  },Math.max(1200,Math.min(Number(duration)||3000,8000)));
+}
+
+async function setWake(enabled){
+  const toggle=$("wakeToggle");
+  const status=$("wakeStatus");
+
+  if(!("wakeLock" in navigator)){
+    toggle.checked=false;
+    status.textContent="Not supported on this browser";
+    localStorage.setItem("bandsync_wake_pref","0");
+    return;
+  }
+
+  try{
+    if(enabled){
+      if(!wakeLock){
+        wakeLock=await navigator.wakeLock.request("screen");
+        wakeLock.addEventListener("release",()=>{
+          wakeLock=null;
+          if(document.visibilityState==="visible" && toggle.checked){
+            setWake(true);
+          }
+        });
+      }
+      toggle.checked=true;
+      status.textContent="Screen will stay on";
+      localStorage.setItem("bandsync_wake_pref","1");
+    }else{
+      if(wakeLock){
+        await wakeLock.release();
+        wakeLock=null;
+      }
+      toggle.checked=false;
+      status.textContent="Tap to enable";
+      localStorage.setItem("bandsync_wake_pref","0");
+    }
+  }catch(e){
+    toggle.checked=false;
+    status.textContent="Could not enable";
+    localStorage.setItem("bandsync_wake_pref","0");
+  }
+}
+
+$("wakeToggle").addEventListener("change",e=>{
+  setWake(e.target.checked);
+});
+
+
+function queueState(d){
+  pendingState=d;
+  if(flushTimer) clearTimeout(flushTimer);
+  // When old retained/history messages arrive in a burst, only paint the newest one.
+  flushTimer=setTimeout(()=>{
+    if(pendingState){
+      applyState(pendingState);
+      pendingState=null;
+      receivedAny=true;
+      setStatus("LIVE",true)
+    }
+  },120)
+}
+
+function connect(){
+  if(es) es.close();
+  setStatus("CONNECTING…",false);
+
+  try{
+    es=new EventSource(STREAM);
+
+    es.onopen=()=>{
+      setStatus(receivedAny?"LIVE":"CONNECTED",true)
+    };
+
+    es.onmessage=ev=>{
+      try{
+        const envelope=JSON.parse(ev.data);
+        if(envelope.event!=="message") return;
+        const d=JSON.parse(envelope.message);
+        if(d && d.type==="alert"){
+          const ts=Number(d.updated)||0;
+          const age=Date.now()-ts;
+
+          // Show emergency messages only once and only while they are fresh.
+          // This prevents old messages from replaying after refresh/reconnect.
+          if(ts>lastAlertSeen && age>=0 && age<10000){
+            lastAlertSeen=ts;
+            try{localStorage.setItem(ALERT_SEEN_KEY,String(ts))}catch(e){}
+            showAlert(d.message,d.duration);
+          }
+          return;
+        }
+        if(d && d.type==="vote"){
+          if(d.voteId===currentVoteId && d.deviceId && (d.value==="yes" || d.value==="no")){
+            voteMap[d.deviceId]=d.value;
+            renderVotes();
+          }
+          return;
+        }
+        queueState(d)
+      }catch(e){
+        console.error("BandSync display parse error",e)
+      }
+    };
+
+    es.onerror=()=>{
+      setStatus("RECONNECTING…",false);
+      // EventSource automatically retries.
+    };
+  }catch(e){
+    setStatus("ERROR",false)
+  }
+}
+
+document.addEventListener("visibilitychange",()=>{
+  if(document.visibilityState==="visible"){
+    if(!es || es.readyState===EventSource.CLOSED) connect();
+    if($("wakeToggle").checked && !wakeLock) setWake(true);
+  }
+});
+
+loadLocalFallback();
+
+const wakePref=localStorage.getItem("bandsync_wake_pref")==="1";
+$("wakeToggle").checked=wakePref;
+$("wakeStatus").textContent=wakePref?"Tap screen once to enable":"Tap to enable";
+
+connect();
+</script>
+</body></html>
