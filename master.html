@@ -1,0 +1,102 @@
+<!doctype html><html lang="sr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#050403"><title>BandSync Master</title><style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;height:100%;overflow:hidden;background:#050403;color:#f7f2ea;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",sans-serif}button,input,textarea{font:inherit}.app{height:100dvh;max-width:520px;margin:auto;display:flex;flex-direction:column}.head{padding:calc(14px + env(safe-area-inset-top)) 15px 11px;border-bottom:1px solid #d6a25818;background:#070604f2}.top{display:flex;justify-content:space-between;align-items:center}.brand{font-weight:800;letter-spacing:.18em;color:#f2d19a}.sub{font-size:9px;letter-spacing:.25em;color:#9f7c4e;margin-top:4px}.share,.small,.ctrl{border:1px solid #d6a25826;background:#120f0b;color:#d9b77f;border-radius:12px;font-weight:750}.share{height:40px;padding:0 13px}.status{text-align:right;font-size:9px;color:#6bd28b;margin-top:8px}.hero{padding:10px 13px 8px}.card{background:linear-gradient(180deg,#ffffff05,#0000),#0b0907;border:1px solid #d6a25820;border-radius:18px;padding:13px}.card+.card{margin-top:8px}.lab{font-size:9px;letter-spacing:.2em;color:#bda173;font-weight:750}.now{font-size:21px;font-weight:800;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.next{font-size:18px;font-weight:700;margin-top:7px;color:#e2d3bf;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.vote{margin-top:10px}.vote.hidden{display:none}.counts{display:flex;justify-content:space-between;font-size:9px}.no{color:#d1776d}.yes{color:#70ca87}.scale{height:7px;border-radius:99px;margin-top:7px;background:linear-gradient(90deg,#8c2e2b,#b95d42,#6d634e,#609966,#2e8550);position:relative}.knob{position:absolute;top:50%;left:50%;width:15px;height:15px;border-radius:50%;transform:translate(-50%,-50%);background:#f1d19a;border:2px solid #15100b}.section{flex:1;min-height:0;padding:0 13px 7px;display:flex;flex-direction:column}.bar{display:flex;justify-content:space-between;align-items:center;margin:5px 2px 8px}.bar b{font-size:11px;letter-spacing:.14em;color:#c9ab79}.tools{display:flex;gap:6px}.small{height:35px;padding:0 9px;font-size:10px}.list{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;border:1px solid #d6a25818;border-radius:17px;background:#080705;scrollbar-width:none}.list::-webkit-scrollbar{display:none}.wrap{position:relative;overflow:hidden;border-bottom:1px solid #ffffff0b}.del{position:absolute;right:0;top:0;bottom:0;width:90px;border:0;background:#6e2020;color:#ffd7d7;font-size:11px;font-weight:850}.song{width:100%;min-height:57px;display:grid;grid-template-columns:34px 1fr 31px;align-items:center;padding:0 11px;border:0;background:#080705;color:#f7f2ea;text-align:left;position:relative;z-index:1;touch-action:pan-y;transition:transform .18s ease}.wrap.open .song{transform:translateX(-90px)}.song.active{background:linear-gradient(90deg,#b2742b2c,#b2742b0a);box-shadow:inset 2px 0 #efc67e}.song.queued{background:linear-gradient(90deg,#8a6a431d,#8a6a4308)}.num{font-size:11px;color:#766b5e}.title{font-size:15px;font-weight:625;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.song.played .title{text-decoration:line-through;text-decoration-thickness:1px;text-decoration-color:#e2caa399;color:#b9aea0}.mark{color:#d6a258;text-align:center}.tag{font-size:7px;color:#d6a258;border:1px solid #d6a25833;border-radius:5px;padding:2px 4px;margin-left:7px}.foot{padding:7px 13px calc(9px + env(safe-area-inset-bottom));border-top:1px solid #d6a25812}.controls{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:8px;padding:8px;border:1px solid #d6a25820;border-radius:19px;background:#0d0b08}.ctrl{height:44px;font-size:11px}.ctrl.main{background:linear-gradient(#e4bb79,#bd8240);color:#171008}.voteCtrl{background:linear-gradient(180deg,#3a2415,#20150d);color:#f1c77f;border-color:#b878344f;box-shadow:inset 0 0 0 1px #f0c67d12}.voteCtrl.active{background:linear-gradient(180deg,#d69b4e,#a9682b);color:#171008;border-color:#f0c67d66;box-shadow:0 0 16px #d69b4e2e}.ctrl:disabled{opacity:.3}.modal{position:fixed;inset:0;display:none;align-items:flex-end;justify-content:center;padding:15px;background:#000c;backdrop-filter:blur(10px);z-index:20}.modal.open{display:flex}.sheet{width:min(100%,520px);background:#0e0c09;border:1px solid #d6a25835;border-radius:23px;padding:18px}.sheet h2{margin:0 0 6px}.sheet p{margin:0 0 12px;color:#948777;font-size:12px}.field,textarea{width:100%;border:1px solid #d6a25826;background:#070604;color:#f7f2ea;border-radius:13px;outline:none;padding:12px}textarea{height:220px;resize:none}.field{height:48px}.acts{display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:8px;margin-top:10px}.sec,.imp{border:0;border-radius:11px;padding:12px;font-weight:750}.sec{background:#18140f;color:#d7c3a4}.imp{background:linear-gradient(#e4bb79,#bd8240);color:#171008}.empty{padding:35px 16px;text-align:center;color:#7f7569}
+</style></head><body><div class="app"><header class="head"><div class="top"><div><div class="brand">BANDSYNC</div><div class="sub">MASTER</div></div><button class="share" id="share">QR SHARE</button></div><div class="status" id="status">READY</div></header>
+<section class="hero"><div class="card"><div class="lab">NOW PLAYING</div><div class="now" id="now">Izaberi prvu pesmu</div></div><div class="card"><div class="lab">NEXT SONG</div><div class="next" id="next">Izaberi sledeću pesmu</div><div class="vote hidden" id="vote"><div class="counts"><span class="no">PROTIV <b id="vn">0</b></span><span class="yes">ZA <b id="vy">0</b></span></div><div class="scale"><i class="knob" id="vk"></i></div></div></div></section>
+<section class="section"><div class="bar"><b>SETLIST <span id="count">(0)</span></b><div class="tools"><button class="small" id="msg">⚠ MSG</button><button class="small" id="quick">⌨ QUICK</button><button class="small" id="add">＋ ADD</button></div></div><div class="list" id="list"></div></section>
+<footer class="foot"><div class="controls"><button class="ctrl voteCtrl" id="voteBtn">VOTE</button><button class="ctrl main" id="go">GO NEXT ▶</button><button class="ctrl" id="display">DISPLAY</button></div></footer></div>
+<div class="modal" id="addM"><div class="sheet"><h2>Paste song list</h2><p>Svaki novi red postaje jedna pesma.</p><textarea id="paste"></textarea><div class="acts"><button class="sec" id="addC">Cancel</button><button class="sec" id="replace">Replace</button><button class="imp" id="append">Add songs</button></div></div></div>
+<div class="modal" id="quickM"><div class="sheet"><h2>Quick song</h2><input class="field" id="quickI" placeholder="Naziv pesme…"><div class="acts"><button class="sec" id="quickC">Cancel</button><button class="sec" id="qNext">SET NEXT</button><button class="imp" id="qNow">PLAY NOW</button></div></div></div>
+<div class="modal" id="msgM"><div class="sheet"><h2>Message</h2><input class="field" id="msgI" placeholder="npr. Preskoči solo…"><div class="acts"><button class="sec" id="msgC">Cancel</button><button class="imp" id="msgS">SEND</button></div></div></div>
+<script>
+const TOPIC='bandsync-3895bb890a4eb15dcaa9',URL='https://ntfy.sh/'+TOPIC,DISPLAY='https://markoatanackovic1-cell.github.io/bandsync-display2/';
+const K='bs2_songs',C='bs2_cur',Q='bs2_q',MC='bs2_mc',MQ='bs2_mq',H='bs2_hist',P='bs2_played',V='bs2_vote';
+let songs=[],cur=null,q=null,mc='',mq='',hist=[],played=[],voteId='',voteActive=false,votes={},stream=null,openDeleteId=null,suppressUntil=0,isSwipingDelete=false;
+const $=x=>document.getElementById(x);
+try{songs=JSON.parse(localStorage.getItem(K)||'[]');cur=localStorage.getItem(C);q=localStorage.getItem(Q);mc=localStorage.getItem(MC)||'';mq=localStorage.getItem(MQ)||'';hist=JSON.parse(localStorage.getItem(H)||'[]');played=JSON.parse(localStorage.getItem(P)||'[]');voteId=localStorage.getItem(V)||'';voteActive=false}catch(e){}
+function save(){localStorage.setItem(K,JSON.stringify(songs));cur?localStorage.setItem(C,cur):localStorage.removeItem(C);q?localStorage.setItem(Q,q):localStorage.removeItem(Q);mc?localStorage.setItem(MC,mc):localStorage.removeItem(MC);mq?localStorage.setItem(MQ,mq):localStorage.removeItem(MQ);localStorage.setItem(H,JSON.stringify(hist));localStorage.setItem(P,JSON.stringify(played));voteId?localStorage.setItem(V,voteId):localStorage.removeItem(V)}
+function current(){return mc?{title:mc,manual:1}:songs.find(x=>x.id===cur)||null} function queued(){return mq?{title:mq,manual:1}:songs.find(x=>x.id===q)||null}
+function vid(){return 'v_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)} function mark(id){if(id&&!played.includes(id))played.push(id)}
+function state(){let a=current(),b=queued();return{current:a?a.title:'',next:b?b.title:'',voteId:(b&&voteActive)?voteId:'',updated:Date.now()}}
+function setStatus(t){$('status').textContent=t}
+async function send(payload=state()){setStatus('SENDING…');try{let r=await fetch(URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify(payload)});if(!r.ok)throw 0;setStatus('SENT ✓');setTimeout(()=>setStatus('READY'),1000)}catch(e){setStatus('SEND ERROR')}}
+function esc(t){return String(t).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function renderVote(){if(!queued()||!voteActive||!voteId){$('vote').classList.add('hidden');return}$('vote').classList.remove('hidden');let y=0,n=0;Object.values(votes).forEach(v=>v==='yes'?y++:v==='no'?n++:0);$('vy').textContent=y;$('vn').textContent=n;$('vk').style.left=((y+n)?100*y/(y+n):50)+'%'}
+function render(){$('count').textContent='('+songs.length+')';$('list').innerHTML=songs.length?'':'<div class="empty">Klikni ADD i nalepi listu pesama.</div>';songs.forEach((s,i)=>{let a=!mc&&s.id===cur,b=!mq&&s.id===q,w=document.createElement('div'),d=document.createElement('button'),e=document.createElement('button');w.className='wrap'+((isSwipingDelete&&openDeleteId===s.id)?' open':'');d.className='del';d.textContent='DELETE';e.className='song'+(a?' active':'')+(b?' queued':'')+(played.includes(s.id)?' played':'');e.innerHTML='<div class="num">'+String(i+1).padStart(2,'0')+'</div><div class="title">'+esc(s.title)+(b?'<span class="tag">NEXT</span>':'')+'</div><div class="mark">'+(a?'▶':b?'→':'')+'</div>';e.onclick=()=>{
+  if(swiped)return;
+  if(openDeleteId){
+    if(openDeleteId===s.id){
+      openDeleteId=null;
+      render();
+      return;
+    }
+    openDeleteId=null;
+  }
+  if(!current()){cur=s.id;mc='';q=null;mq='';mark(s.id)}
+  else if(!a){q=s.id;mq='';voteId='';voteActive=false;votes={}}
+  save();render();send()
+};d.addEventListener('touchstart',ev=>{ev.stopPropagation()},{passive:true});d.onclick=(ev)=>{ev.preventDefault();ev.stopPropagation();suppressUntil=Date.now()+450;openDeleteId=null;isSwipingDelete=false;songs=songs.filter(x=>x.id!==s.id);played=played.filter(x=>x!==s.id);hist=hist.filter(x=>x.id!==s.id);if(cur===s.id){cur=null;mc=''}if(q===s.id){q=null;mq='';voteId='';voteActive=false;votes={}}save();render();send()};let sx=0,sy=0,cx=0,cy=0,tracking=false,axis='',swiped=false;
+e.addEventListener('touchstart',z=>{
+  if(!z.touches||!z.touches[0])return;
+  sx=z.touches[0].clientX;sy=z.touches[0].clientY;cx=sx;cy=sy;
+  tracking=true;axis='';swiped=false;isSwipingDelete=true;e.style.transition='none';
+},{passive:true});
+e.addEventListener('touchmove',z=>{
+  if(!tracking||!z.touches||!z.touches[0])return;
+  cx=z.touches[0].clientX;cy=z.touches[0].clientY;
+  let dx=cx-sx,dy=cy-sy;
+  if(!axis&&(Math.abs(dx)>8||Math.abs(dy)>8))axis=Math.abs(dx)>Math.abs(dy)?'x':'y';
+  if(axis==='y'){e.style.transform='';return}
+  if(axis==='x'){swiped=true;let base=openDeleteId===s.id?-90:0;let tx=Math.max(-96,Math.min(0,base+dx));e.style.transform='translateX('+tx+'px)'}
+},{passive:true});
+e.addEventListener('touchend',()=>{
+  if(!tracking)return;
+  tracking=false;
+  e.style.transition='transform .18s ease';
+  const dx=cx-sx;
+
+  if(axis==='x'&&swiped&&dx<-50){
+    openDeleteId=s.id;
+    e.style.transform='';
+    isSwipingDelete=true;
+    render();
+  }else{
+    openDeleteId=null;
+    isSwipingDelete=false;
+    e.style.transform='';
+    render();
+  }
+
+  setTimeout(()=>{swiped=false;axis=''},0);
+});w.append(d,e);$('list').appendChild(w)});let a=current(),b=queued();$('now').textContent=a?a.title:'Izaberi prvu pesmu';$('next').textContent=b?b.title:'Izaberi sledeću pesmu';$('voteBtn').disabled=!b;$('voteBtn').classList.toggle('active',voteActive);$('go').disabled=!b;renderVote()}
+function parsed(){return $('paste').value.replace(/\r/g,'\n').split(/\n+/).map(x=>x.trim().replace(/^\d+\s*[.):-]\s*/,'' )).filter(Boolean)}
+function pushHist(){let a=current();if(a)hist.push({title:a.title,manual:!!a.manual,id:a.manual?null:cur});if(hist.length>20)hist=hist.slice(-20)}
+$('add').onclick=()=>{$('paste').value='';$('addM').classList.add('open')};$('addC').onclick=()=>$('addM').classList.remove('open');
+$('append').onclick=()=>{let arr=parsed();if(!arr.length)return;let seen=new Set(songs.map(x=>x.title.toLowerCase()));arr.forEach(t=>{let k=t.toLowerCase();if(!seen.has(k)){songs.push({id:'s_'+Date.now().toString(36)+Math.random().toString(36).slice(2),title:t});seen.add(k)}});save();$('addM').classList.remove('open');render()};
+$('replace').onclick=()=>{let arr=parsed();if(!arr.length)return;songs=arr.map(t=>({id:'s_'+Date.now().toString(36)+Math.random().toString(36).slice(2),title:t}));cur=q=null;mc=mq='';hist=[];played=[];voteId='';voteActive=false;votes={};save();$('addM').classList.remove('open');render();send()};
+$('quick').onclick=()=>{$('quickI').value='';$('quickM').classList.add('open')};$('quickC').onclick=()=>$('quickM').classList.remove('open');$('qNext').onclick=()=>{let t=$('quickI').value.trim();if(!t)return;mq=t;q=null;voteId='';voteActive=false;votes={};save();$('quickM').classList.remove('open');render();send()};$('qNow').onclick=()=>{let t=$('quickI').value.trim();if(!t)return;pushHist();mc=t;cur=null;mq='';q=null;voteId='';voteActive=false;votes={};save();$('quickM').classList.remove('open');render();send()};
+$('msg').onclick=()=>{$('msgI').value='';$('msgM').classList.add('open')};$('msgC').onclick=()=>$('msgM').classList.remove('open');$('msgS').onclick=()=>{let t=$('msgI').value.trim();if(!t)return;$('msgM').classList.remove('open');send({type:'alert',message:t,duration:3000,updated:Date.now()})};
+$('go').onclick=()=>{let b=queued();if(!b)return;pushHist();if(b.manual){mc=b.title;cur=null}else{cur=q;mc='';mark(q)}q=null;mq='';voteId='';voteActive=false;votes={};save();render();send()};
+$('voteBtn').onclick=()=>{
+  let b=queued();
+  if(!b)return;
+  voteActive=!voteActive;
+  if(voteActive){
+    voteId=vid();
+    votes={};
+  }else{
+    voteId='';
+    votes={};
+  }
+  save();
+  render();
+  send();
+};
+$('display').onclick=()=>window.open(DISPLAY,'_blank');$('share').onclick=()=>window.open('https://api.qrserver.com/v1/create-qr-code/?size=400x400&data='+encodeURIComponent(DISPLAY),'_blank');
+$('list').addEventListener('scroll',()=>{if(openDeleteId||isSwipingDelete){openDeleteId=null;isSwipingDelete=false;render()}},{passive:true});
+['addM','quickM','msgM'].forEach(id=>$(id).onclick=e=>{if(e.target===$(id))$(id).classList.remove('open')});
+document.addEventListener('touchstart',ev=>{if((openDeleteId||isSwipingDelete)&&!ev.target.closest('.wrap')){openDeleteId=null;isSwipingDelete=false;render()}},{passive:true});
+function connect(){try{stream=new EventSource(URL+'/sse?since=12h');stream.onmessage=e=>{try{let env=JSON.parse(e.data);if(env.event!=='message')return;let d=JSON.parse(env.message);if(voteActive&&d.type==='vote'&&d.voteId===voteId&&d.deviceId){votes[d.deviceId]=d.value;renderVote()}}catch(x){}}}catch(e){}}
+window.addEventListener('pageshow',()=>{openDeleteId=null;isSwipingDelete=false;render()});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){openDeleteId=null;isSwipingDelete=false;render()}});
+connect();openDeleteId=null;isSwipingDelete=false;render();
+</script></body></html>
