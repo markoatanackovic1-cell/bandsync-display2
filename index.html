@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050403">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>BandSync Display</title>
+
+<style>
+:root{
+  --gold:#d6a258;
+  --gold2:#f2d19a;
+  --text:#f7f1e8;
+  --muted:#8d8174;
+  --green:#67d188;
+}
+*{box-sizing:border-box}
+html,body{
+  margin:0;height:100%;min-height:100%;overflow:hidden;
+  background:
+    radial-gradient(circle at 50% -8%,rgba(198,128,51,.15),transparent 30%),
+    linear-gradient(180deg,#070503 0%,#030201 100%);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif
+}
+body{display:flex;min-height:100dvh}
+.screen{
+  width:100%;height:100dvh;
+  padding:calc(24px + env(safe-area-inset-top)) 22px calc(24px + env(safe-area-inset-bottom));
+  display:flex;flex-direction:column;overflow:hidden;position:relative;
+  isolation:isolate
+}
+.screen:before{
+  content:"";position:absolute;inset:0;z-index:-3;pointer-events:none;
+  background:
+    radial-gradient(ellipse at 50% 50%,rgba(212,151,68,.08),transparent 34%),
+    linear-gradient(115deg,transparent 0 32%,rgba(255,255,255,.012) 42%,transparent 53% 100%)
+}
+.screen:after{
+  content:"";position:absolute;left:-12%;right:-12%;top:58%;height:220px;z-index:-2;
+  background:radial-gradient(ellipse at center,rgba(215,160,79,.16),transparent 56%);
+  filter:blur(18px);pointer-events:none
+}
+.top{
+  display:flex;justify-content:center;align-items:center;
+  color:#c7a36d;font-size:10px;letter-spacing:.30em;text-transform:uppercase;
+  font-weight:690
+}
+.status{
+  position:absolute;right:18px;top:calc(23px + env(safe-area-inset-top));
+  font-size:8px;letter-spacing:.10em;color:#c36c62;
+  padding:5px 7px;border-radius:999px;border:1px solid rgba(255,255,255,.035)
+}
+.status.on{color:var(--green);border-color:rgba(103,209,136,.10)}
+.status.on:before{
+  content:"";display:inline-block;width:5px;height:5px;border-radius:50%;
+  background:var(--green);margin-right:5px;box-shadow:0 0 8px rgba(103,209,136,.65)
+}
+.center{
+  flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;
+  text-align:center;position:relative;z-index:1
+}
+.label{
+  font-size:11px;letter-spacing:.34em;color:#d0ad75;font-weight:680
+}
+.spark{
+  width:96px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(230,181,109,.95),transparent);
+  margin:13px 0 24px;
+  box-shadow:0 0 12px rgba(214,162,88,.42)
+}
+.current{
+  font-size:clamp(50px,13vw,84px);
+  line-height:.98;font-weight:790;letter-spacing:-.04em;
+  color:#f3d39d;
+  text-shadow:
+    0 0 34px rgba(214,162,88,.10),
+    0 1px 0 rgba(255,255,255,.05);
+  max-width:92vw;overflow-wrap:anywhere;
+  text-wrap:balance
+}
+.wave{
+  width:min(86vw,560px);height:76px;margin:40px 0 38px;position:relative;opacity:.82
+}
+.wave:before{
+  content:"";position:absolute;left:0;right:0;top:37px;height:1px;
+  background:linear-gradient(90deg,transparent 0%,rgba(214,162,88,.18) 12%,rgba(235,187,113,.90) 49%,rgba(214,162,88,.18) 88%,transparent 100%);
+  box-shadow:
+    0 -9px 0 rgba(214,162,88,.08),
+    0 9px 0 rgba(214,162,88,.08),
+    0 -18px 0 rgba(214,162,88,.035),
+    0 18px 0 rgba(214,162,88,.035);
+  transform:skewY(-3.2deg);
+  filter:drop-shadow(0 0 8px rgba(214,162,88,.16))
+}
+.wave:after{
+  content:"";position:absolute;left:12%;right:12%;top:37px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(238,190,119,.62),transparent);
+  transform:skewY(3.2deg);opacity:.68
+}
+.nextlabel{
+  font-size:10px;letter-spacing:.28em;color:#c2a06e;font-weight:700
+}
+.next{
+  font-size:clamp(27px,7.2vw,43px);
+  line-height:1.08;font-weight:640;margin-top:12px;
+  color:#d9c2a1;max-width:90vw;overflow-wrap:anywhere;text-wrap:balance
+}
+.wait{color:#766d63;text-shadow:none}
+.bottom{
+  display:flex;justify-content:center;align-items:center;
+  color:#5e574f;font-size:8px;letter-spacing:.18em;
+  padding-bottom:2px
+}
+@media(max-height:700px){
+  .wave{margin:26px 0 26px;height:58px}
+  .wave:before,.wave:after{top:29px}
+  .current{font-size:clamp(42px,11.5vw,68px)}
+}
+
+/* PREMIUM DISPLAY PASS 4 */
+body{background:
+radial-gradient(circle at 50% -8%,rgba(199,130,52,.17),transparent 30%),
+linear-gradient(180deg,#060402,#020201)!important}
+.screen:before{background:
+radial-gradient(ellipse at 50% 48%,rgba(215,158,76,.09),transparent 36%),
+linear-gradient(115deg,transparent 0 33%,rgba(255,255,255,.012) 43%,transparent 54% 100%)!important}
+.top{color:#c5a26d!important}
+.label{color:#d7b47b!important}
+.spark{width:112px!important;background:linear-gradient(90deg,transparent,rgba(242,198,127,.96),transparent)!important;
+box-shadow:0 0 14px rgba(215,161,83,.34),0 0 30px rgba(215,161,83,.08)!important}
+.current{color:#f7d9a7!important;font-weight:810!important;letter-spacing:-.045em!important;
+text-shadow:0 0 30px rgba(215,161,83,.12),0 1px 0 rgba(255,255,255,.06)!important}
+.nextlabel{color:#c2a06b!important}
+.next{color:#dfc9aa!important;font-weight:650!important}
+.wave{opacity:.92!important}
+.status{background:rgba(7,5,3,.35)!important;backdrop-filter:blur(12px)!important}
+
+</style>
+
+</head>
+<body>
+<main class="screen">
+  <div class="top">UŽIVO OD: MASTER</div>
+  <div id="status" class="status">CONNECTING…</div>
+
+  <div class="center">
+    <div class="label">TRENUTNO</div>
+    <div class="spark"></div>
+    <div id="current" class="current wait">Čekam Master…</div>
+
+    <div class="wave"></div>
+
+    <div class="nextlabel">SLEDEĆA PESMA</div>
+    <div id="next" class="next">—</div>
+  </div>
+
+  <div class="bottom">BANDSYNC · LIVE DISPLAY</div>
+</main>
+
+<script>
+const NTFY_TOPIC="bandsync-3895bb890a4eb15dcaa9";
+const STREAM="https://ntfy.sh/"+NTFY_TOPIC+"/sse?since=12h";
+const LAST_KEY="bandsync_display_last_v3";
+const $=id=>document.getElementById(id);
+
+let es=null;
+let pendingState=null;
+let flushTimer=null;
+let receivedAny=false;
+
+function setStatus(text,on=false){
+  $("status").textContent=text;
+  $("status").classList.toggle("on",on)
+}
+
+function applyState(d,persist=true){
+  if(!d || typeof d!=="object") return;
+  $("current").textContent=d.current||"Čekam Master…";
+  $("current").classList.toggle("wait",!d.current);
+  $("next").textContent=d.next||"—";
+  if(persist){
+    try{localStorage.setItem(LAST_KEY,JSON.stringify(d))}catch(e){}
+  }
+}
+
+function loadLocalFallback(){
+  try{
+    const d=JSON.parse(localStorage.getItem(LAST_KEY)||"null");
+    if(d) applyState(d,false)
+  }catch(e){}
+}
+
+function queueState(d){
+  pendingState=d;
+  if(flushTimer) clearTimeout(flushTimer);
+  // When old retained/history messages arrive in a burst, only paint the newest one.
+  flushTimer=setTimeout(()=>{
+    if(pendingState){
+      applyState(pendingState);
+      pendingState=null;
+      receivedAny=true;
+      setStatus("LIVE",true)
+    }
+  },120)
+}
+
+function connect(){
+  if(es) es.close();
+  setStatus("CONNECTING…",false);
+
+  try{
+    es=new EventSource(STREAM);
+
+    es.onopen=()=>{
+      setStatus(receivedAny?"LIVE":"CONNECTED",true)
+    };
+
+    es.onmessage=ev=>{
+      try{
+        const envelope=JSON.parse(ev.data);
+        if(envelope.event!=="message") return;
+        const d=JSON.parse(envelope.message);
+        queueState(d)
+      }catch(e){
+        console.error("BandSync display parse error",e)
+      }
+    };
+
+    es.onerror=()=>{
+      setStatus("RECONNECTING…",false);
+      // EventSource automatically retries.
+    };
+  }catch(e){
+    setStatus("ERROR",false)
+  }
+}
+
+document.addEventListener("visibilitychange",()=>{
+  if(document.visibilityState==="visible" && (!es || es.readyState===EventSource.CLOSED)){
+    connect()
+  }
+});
+
+loadLocalFallback();
+connect();
+</script>
+</body></html>
