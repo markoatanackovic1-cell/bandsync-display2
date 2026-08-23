@@ -1,0 +1,3582 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta name="bandsync-build" content="v2.3511">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#050403">
+<title>BandSync Display</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:#050403;color:#f7f2ea;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Inter,sans-serif}
+body{min-height:100dvh;overflow:hidden}
+.display{height:100dvh;max-width:620px;margin:auto;position:relative;display:flex;flex-direction:column;align-items:center;padding:calc(22px + env(safe-area-inset-top)) 22px calc(22px + env(safe-area-inset-bottom));background:radial-gradient(circle at 50% 25%,rgba(160,104,40,.08),transparent 35%),#050403}
+.top{width:100%;display:flex;justify-content:space-between;align-items:center}
+.from{font-size:9px;letter-spacing:.30em;color:#bda173;font-weight:760}
+
+.deviceNameBtn{
+  max-width:42%;
+  height:31px;
+  padding:0 10px;
+  border-radius:10px;
+  border:1px solid rgba(214,162,88,.14);
+  background:#0c0907;
+  color:#c7a66e;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.07em;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.deviceNameBtn:active{background:#15100c}
+.live{font-size:9px;letter-spacing:.10em;color:#72cf8b;border:1px solid rgba(93,185,117,.24);border-radius:999px;padding:8px 11px}
+.center{flex:1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0}
+.label{font-size:10px;letter-spacing:.30em;color:#d1aa70;font-weight:760;text-align:center}
+.rule{width:92px;height:1px;background:linear-gradient(90deg,transparent,#b98d50,transparent);margin:18px auto 22px}
+.current{width:100%;text-align:center;font-size:clamp(34px,7vw,60px);line-height:.98;font-weight:860;letter-spacing:-.035em;color:#f1cf98;text-transform:uppercase;word-break:break-word}
+.divider{width:72%;height:34px;position:relative;margin:42px 0 34px}
+.divider:before,.divider:after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:linear-gradient(90deg,transparent,rgba(197,145,78,.65),transparent)}
+.divider:before{transform:rotate(2deg)} .divider:after{transform:rotate(-2deg);opacity:.45}
+.nextLabel{font-size:9px;letter-spacing:.30em;color:#cba56f;font-weight:760;text-align:center}
+.next{margin-top:18px;width:92%;text-align:center;font-size:clamp(24px,5vw,38px);line-height:1.05;font-weight:760;color:#d8c5aa;text-transform:uppercase;word-break:break-word}
+.votePanel{width:min(90vw,520px);margin-top:26px;padding:14px 15px 12px;border-radius:18px;border:1px solid rgba(214,162,88,.13);background:rgba(11,9,7,.72);backdrop-filter:blur(14px)}
+.votePanel.hidden{display:none}
+.voteHeader{font-size:9px;letter-spacing:.18em;color:#b99b70;font-weight:720;margin-bottom:10px}
+.voteLine{display:flex;justify-content:space-between;font-size:10px;letter-spacing:.11em;font-weight:760}
+.voteNo{color:#d1776d} .voteYes{color:#70ca87}
+.voteScale{position:relative;height:9px;border-radius:99px;margin:9px 0 13px;background:linear-gradient(90deg,#8c2e2b,#b95d42,#6d634e,#609966,#2e8550);box-shadow:inset 0 1px 4px rgba(0,0,0,.55)}
+.voteKnob{position:absolute;top:50%;left:50%;width:18px;height:18px;border-radius:50%;transform:translate(-50%,-50%);background:#f1d19a;border:2px solid #15100b;transition:left .22s ease}
+.voteButtons{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.voteBtn{height:42px;border-radius:13px;font-size:11px;font-weight:820;letter-spacing:.05em;background:#100d0a;border:1px solid rgba(255,255,255,.06)}
+.voteBtn.no{color:#d98a80;border-color:rgba(192,82,72,.22)} .voteBtn.yes{color:#83d59a;border-color:rgba(85,172,108,.22)}
+.voteBtn.selected{box-shadow:inset 0 0 0 1px currentColor,0 0 18px rgba(255,255,255,.035)}
+.voteMine{margin-top:8px;text-align:center;font-size:9px;color:#70675e;letter-spacing:.06em}
+
+.reactions{
+  width:min(92vw,520px);
+  margin-top:18px;
+}
+.reactionLabel{
+  text-align:center;
+  font-size:8px;
+  letter-spacing:.20em;
+  color:#786b5d;
+  margin-bottom:8px;
+}
+.reactionRow{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;
+}
+.reactionBtn{
+  height:46px;
+  border-radius:13px;
+  border:1px solid rgba(214,162,88,.12);
+  background:#0c0907;
+  font-size:21px;
+  line-height:1;
+}
+.reactionBtn:active{
+  transform:scale(.96);
+  background:#17100c;
+}
+.bottom{width:100%;display:flex;flex-direction:column;align-items:center;gap:18px}
+.awake{display:flex;align-items:center;gap:12px;border:1px solid rgba(214,162,88,.16);background:#0b0907;border-radius:17px;padding:11px 16px;min-width:280px}
+.awakeBox{width:31px;height:31px;border:1px solid rgba(214,162,88,.28);border-radius:10px;display:grid;place-items:center;color:#72cf8b;font-weight:900}
+.awakeText b{display:block;font-size:10px;letter-spacing:.14em;color:#d8b77f} .awakeText span{display:block;font-size:9px;color:#73675b;margin-top:4px}
+.footer{font-size:8px;letter-spacing:.28em;color:#5b5148}
+.alertOverlay{position:fixed;inset:0;background:rgba(3,2,1,.94);display:flex;align-items:center;justify-content:center;padding:80px 26px 40px;opacity:0;pointer-events:none;transition:opacity .16s ease;z-index:1000}
+.alertOverlay.show{opacity:1;pointer-events:auto}
+.alertInner{text-align:center;max-width:620px}
+.alertTag{font-size:10px;letter-spacing:.32em;color:#d5a45d;font-weight:800;margin-bottom:18px}
+.alertText{font-size:clamp(34px,8vw,64px);line-height:1.02;font-weight:860;color:#f5d49e;word-break:break-word}
+.alertClose{position:absolute;top:calc(18px + env(safe-area-inset-top));right:18px;width:62px;height:62px;border-radius:20px;border:1px solid rgba(242,209,154,.22);background:rgba(18,14,10,.9);color:#f2d19a;font-size:30px;display:grid;place-items:center;z-index:1001}
+
+.nameOverlay{
+  position:fixed;
+  inset:0;
+  z-index:1100;
+  display:none;
+  align-items:flex-end;
+  justify-content:center;
+  padding:16px;
+  background:rgba(0,0,0,.70);
+  backdrop-filter:blur(10px);
+}
+.nameOverlay.open{display:flex}
+.nameSheet{
+  width:min(100%,520px);
+  background:#0f0c09;
+  border:1px solid rgba(214,162,88,.20);
+  border-radius:22px;
+  padding:18px;
+}
+.nameTitle{
+  font-size:20px;
+  font-weight:840;
+  color:#f2d19a;
+}
+.nameSub{
+  margin-top:5px;
+  color:#837568;
+  font-size:11px;
+}
+.nameInput{
+  width:100%;
+  height:48px;
+  margin-top:14px;
+  border-radius:13px;
+  border:1px solid rgba(214,162,88,.16);
+  background:#070604;
+  color:#f7f2ea;
+  padding:0 12px;
+  outline:none;
+  font-size:15px;
+  text-transform:uppercase;
+}
+.nameActions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  margin-top:10px;
+}
+.nameAction{
+  height:44px;
+  border-radius:12px;
+  border:0;
+  font-weight:800;
+}
+.nameAction.skip{background:#18140f;color:#c3ad91}
+.nameAction.save{background:linear-gradient(#e4bb79,#bd8240);color:#171008}
+.version{position:fixed;left:7px;bottom:3px;font-size:7px;color:#443b32;pointer-events:none}
+
+/* ===== BANDSYNC DISPLAY PREMIUM VISUAL PASS ===== */
+:root{
+  --bg:#050403;
+  --gold:#e5bd7b;
+  --gold-soft:#c99f67;
+  --text:#f6f0e8;
+  --muted:#8c7d6c;
+}
+
+html,body{
+  background:
+    radial-gradient(circle at 50% -5%,rgba(192,132,62,.08),transparent 30%),
+    #050403;
+}
+
+.display{
+  background:
+    radial-gradient(circle at 50% 22%,rgba(167,108,42,.075),transparent 28%),
+    radial-gradient(circle at 50% 75%,rgba(214,162,88,.025),transparent 28%),
+    linear-gradient(180deg,#050403,#030302);
+  padding:
+    calc(24px + env(safe-area-inset-top))
+    22px
+    calc(24px + env(safe-area-inset-bottom));
+}
+
+.top{
+  align-items:center;
+  gap:8px;
+}
+
+.from{
+  font-size:8px;
+  letter-spacing:.32em;
+  color:#a7875d;
+}
+
+.deviceNameBtn{
+  height:32px;
+  border-radius:11px;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.012),transparent),
+    #0d0a07;
+  border-color:rgba(214,162,88,.13);
+  color:#caa76e;
+}
+
+.live{
+  background:#09110b;
+  border-color:rgba(93,185,117,.20);
+  color:#75d48d;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.012);
+}
+
+.center{
+  justify-content:center;
+}
+
+.label,
+.nextLabel{
+  font-size:9px;
+  letter-spacing:.34em;
+  color:#c6a36e;
+}
+
+.rule{
+  margin:18px auto 24px;
+  background:linear-gradient(90deg,transparent,rgba(202,157,93,.55),transparent);
+}
+
+.current{
+  max-width:95%;
+  font-size:clamp(36px,7.4vw,64px);
+  line-height:.97;
+  font-weight:890;
+  letter-spacing:-.04em;
+  color:#f2ce95;
+  text-shadow:0 10px 36px rgba(0,0,0,.22);
+}
+
+.divider{
+  width:68%;
+  margin:44px 0 35px;
+}
+
+.divider:before,
+.divider:after{
+  background:linear-gradient(90deg,transparent,rgba(202,150,79,.54),transparent);
+}
+
+.next{
+  width:90%;
+  font-size:clamp(23px,5vw,38px);
+  font-weight:760;
+  color:#d8c6ae;
+  letter-spacing:-.02em;
+}
+
+.votePanel{
+  width:min(91vw,520px);
+  margin-top:27px;
+  padding:15px;
+  border-radius:19px;
+  border-color:rgba(214,162,88,.12);
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.012),transparent),
+    rgba(10,8,6,.78);
+  box-shadow:0 14px 32px rgba(0,0,0,.16);
+}
+
+.voteHeader{
+  color:#aa8b61;
+}
+
+.voteBtn{
+  height:43px;
+  border-radius:13px;
+  background:#0d0a07;
+}
+
+.reactions{
+  margin-top:20px;
+}
+
+.reactionLabel{
+  color:#75685b;
+  letter-spacing:.22em;
+}
+
+.reactionRow{
+  gap:8px;
+}
+
+.reactionBtn{
+  height:48px;
+  border-radius:14px;
+  border-color:rgba(214,162,88,.11);
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.01),transparent),
+    #0b0806;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.012);
+}
+
+.reactionBtn:active{
+  background:#17100c;
+  transform:scale(.95);
+}
+
+.awake{
+  min-width:290px;
+  padding:12px 16px;
+  border-radius:18px;
+  border-color:rgba(214,162,88,.15);
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.012),transparent),
+    #0b0907;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.012),
+    0 10px 24px rgba(0,0,0,.14);
+}
+
+.awakeBox{
+  border-color:rgba(214,162,88,.24);
+  background:#0d0a07;
+}
+
+.awakeText b{
+  color:#d7b57e;
+}
+
+.footer{
+  color:#51483f;
+}
+
+.alertOverlay{
+  background:
+    radial-gradient(circle at 50% 32%,rgba(173,112,45,.09),transparent 34%),
+    rgba(3,2,1,.96);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+}
+
+.alertClose{
+  width:62px;
+  height:62px;
+  border-radius:20px;
+  border-color:rgba(242,209,154,.20);
+  background:rgba(15,12,9,.93);
+  color:#f1cd95;
+  box-shadow:0 14px 36px rgba(0,0,0,.30);
+}
+
+.alertTag{
+  color:#cfa464;
+}
+
+.alertText{
+  color:#f2ce95;
+  text-shadow:0 12px 35px rgba(0,0,0,.25);
+}
+
+.nameOverlay{
+  background:rgba(0,0,0,.74);
+  backdrop-filter:blur(12px);
+}
+
+.nameSheet{
+  border-radius:24px;
+  border-color:rgba(214,162,88,.18);
+  background:
+    radial-gradient(circle at 80% 0%,rgba(214,162,88,.04),transparent 34%),
+    #0e0b08;
+  box-shadow:0 24px 70px rgba(0,0,0,.46);
+}
+
+.nameInput{
+  border-color:rgba(214,162,88,.14);
+  background:#080604;
+}
+
+.nameAction.save{
+  background:linear-gradient(180deg,#e2b875,#b97b3d);
+}
+
+.version{
+  color:#3d362f;
+  letter-spacing:.08em;
+}
+
+
+/* ===== MASTER NOTES FEED v3.7 ===== */
+.masterNotesPanel{
+  width:min(92vw,540px);
+  margin-top:18px;
+  border:1px solid rgba(214,162,88,.16);
+  border-radius:18px;
+  background:
+    radial-gradient(circle at 90% 0%,rgba(214,162,88,.035),transparent 35%),
+    linear-gradient(180deg,rgba(255,255,255,.012),transparent),
+    #0b0806;
+  box-shadow:
+    0 14px 34px rgba(0,0,0,.20),
+    inset 0 1px 0 rgba(255,255,255,.014);
+  overflow:hidden;
+}
+
+.masterNotesHead{
+  min-height:43px;
+  padding:0 13px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  border-bottom:1px solid rgba(214,162,88,.09);
+}
+
+.masterNotesTitle{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:#d8b170;
+  font-size:9px;
+  font-weight:840;
+  letter-spacing:.12em;
+}
+
+.masterNotesHistoryLabel{
+  color:#8d7352;
+  font-size:8px;
+  font-weight:760;
+  letter-spacing:.10em;
+}
+
+.masterNotesViewport{
+  position:relative;
+  max-height:150px; /* about two messages */
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;
+}
+
+.masterNotesViewport::-webkit-scrollbar{
+  width:4px;
+}
+
+.masterNotesViewport::-webkit-scrollbar-thumb{
+  background:rgba(214,162,88,.25);
+  border-radius:999px;
+}
+
+.masterNoteItem{
+  min-height:68px;
+  padding:11px 13px;
+  display:grid;
+  grid-template-columns:46px 1fr;
+  gap:9px;
+  align-items:start;
+  border-bottom:1px solid rgba(255,255,255,.045);
+}
+
+.masterNoteItem:last-child{
+  border-bottom:none;
+}
+
+.masterNoteTime{
+  color:#c59b60;
+  font-size:9px;
+  font-weight:760;
+  line-height:1.3;
+}
+
+.masterNoteBody{
+  min-width:0;
+}
+
+.masterNoteAuthor{
+  color:#ece4da;
+  font-size:10px;
+  font-weight:780;
+  margin-bottom:3px;
+}
+
+.masterNoteText{
+  color:#cfc3b5;
+  font-size:11px;
+  line-height:1.34;
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+
+.masterNotesEmpty{
+  min-height:68px;
+  display:grid;
+  place-items:center;
+  padding:14px;
+  color:#655c53;
+  font-size:10px;
+  text-align:center;
+}
+
+.masterNoteItem.newest{
+  background:
+    linear-gradient(90deg,rgba(191,129,56,.08),transparent 60%);
+}
+
+@media(min-width:700px){
+  .masterNotesPanel{
+    width:min(72vw,620px);
+  }
+}
+
+/* QUICK NOTE POPUP GUARD v3.8 */
+
+/* ===== QUICK REACTIONS PHONE v3.9 ===== */
+.reactions{
+  width:min(92vw,520px);
+  margin-top:16px;
+}
+
+.reactionLabel{
+  margin-bottom:8px;
+  text-align:center;
+  font-size:8px;
+  font-weight:780;
+  letter-spacing:.18em;
+  color:#736558;
+}
+
+.reactionRow{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:7px;
+}
+
+.reactionBtn{
+  height:46px;
+  border-radius:13px;
+  border:1px solid rgba(214,162,88,.12);
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.012),transparent),
+    #0b0806;
+  font-size:20px;
+  line-height:1;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.012);
+  transition:transform .10s ease,border-color .12s ease,background .12s ease;
+}
+
+.reactionBtn:active{
+  transform:scale(.95);
+  border-color:rgba(230,189,122,.26);
+  background:#17100c;
+}
+
+.reactionBtn.sent{
+  border-color:rgba(111,210,138,.26);
+  background:#0c120d;
+}
+
+
+/* ===== FRESH CLIENT SESSION v5.4 ===== */
+#nameSkip{display:none!important}
+
+
+/* ===== CLIENT ROLE SELECTOR v5.6 ===== */
+.clientRoleBlock{
+  margin-top:14px;
+}
+
+.clientRoleLabel{
+  margin-bottom:8px;
+  color:#8d7860;
+  font-size:8px;
+  font-weight:820;
+  letter-spacing:.14em;
+  text-align:center;
+}
+
+.clientRoleGrid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+}
+
+.clientRoleBtn{
+  min-height:44px;
+  border-radius:12px;
+  border:1px solid rgba(214,162,88,.13);
+  background:#0d0a07;
+  color:#968572;
+  font-size:10px;
+  font-weight:820;
+  letter-spacing:.07em;
+}
+
+.clientRoleBtn.selected{
+  border-color:rgba(230,189,122,.48);
+  background:
+    linear-gradient(180deg,rgba(230,189,122,.10),transparent),
+    #171008;
+  color:#efca8f;
+  box-shadow:0 0 0 1px rgba(230,189,122,.04);
+}
+
+#nameSave.roleReady{
+  border-color:rgba(230,189,122,.36)!important;
+  color:#efc786!important;
+}
+
+
+/* ===== CLIENT CONNECTION INDICATOR v5.8 ===== */
+.clientConnStatus{
+  position:fixed;
+  top:14px;
+  right:14px;
+  z-index:80;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  min-height:28px;
+  padding:0 10px;
+  border:1px solid rgba(214,162,88,.13);
+  border-radius:999px;
+  background:rgba(10,8,6,.88);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  color:#9f8e78;
+  font-size:8px;
+  font-weight:840;
+  letter-spacing:.08em;
+  pointer-events:none;
+}
+
+.clientConnDot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#777;
+}
+
+.clientConnStatus.live{
+  color:#7fd293;
+  border-color:rgba(103,204,128,.22);
+}
+.clientConnStatus.live .clientConnDot{
+  background:#68d585;
+  box-shadow:0 0 9px rgba(104,213,133,.38);
+}
+
+.clientConnStatus.fallback{
+  color:#d9ad67;
+  border-color:rgba(217,173,103,.24);
+}
+.clientConnStatus.fallback .clientConnDot{
+  background:#d9ad67;
+  box-shadow:0 0 9px rgba(217,173,103,.30);
+}
+
+.clientConnStatus.reconnecting{
+  color:#d7a25f;
+}
+
+.clientConnStatus.offline{
+  color:#df756c;
+  border-color:rgba(223,117,108,.25);
+}
+.clientConnStatus.offline .clientConnDot{
+  background:#df756c;
+  box-shadow:0 0 9px rgba(223,117,108,.30);
+}
+
+@media(max-width:600px){
+  .clientConnStatus{
+    top:10px;
+    right:10px;
+    min-height:25px;
+    padding:0 8px;
+    font-size:7px;
+  }
+}
+
+
+/* ===== SHARED BUILD BADGE ===== */
+.bandSyncBuild{
+  position:fixed;
+  right:10px;
+  bottom:7px;
+  z-index:999;
+  color:rgba(185,154,108,.42);
+  font-size:7px;
+  font-weight:760;
+  letter-spacing:.12em;
+  pointer-events:none;
+  user-select:none;
+}
+
+
+/* ===== CLIENT Q QUEUE v2.3448 ===== */
+.clientQueue{
+  width:min(520px,84vw);
+  margin:14px auto 0;
+  padding:9px 11px;
+  border:1px solid rgba(214,162,88,.13);
+  border-radius:13px;
+  background:rgba(11,8,6,.68);
+}
+.clientQueue.hidden{display:none}
+.clientQueueHead{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:5px;
+  color:#a98b61;
+  font-size:7px;
+  font-weight:850;
+  letter-spacing:.14em;
+}
+.clientQueueList{display:grid;gap:3px}
+.clientQueueItem{
+  display:grid;
+  grid-template-columns:24px 1fr;
+  align-items:center;
+  min-height:27px;
+  border-top:1px solid rgba(255,255,255,.035);
+}
+.clientQueueItem:first-child{border-top:0}
+.clientQueueNum{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:18px;height:18px;
+  border-radius:50%;
+  border:1px solid rgba(230,189,122,.28);
+  color:#e6bd7d;
+  font-size:7px;font-weight:900;
+}
+.clientQueueTitle{
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  color:#cfc3b5;font-size:9px;font-weight:720;
+}
+
+
+/* ===== JELA SECOND MASTER v2.3462 ===== */
+.jelaModeBtn{
+  width:100%;
+  height:44px;
+  margin-top:10px;
+  border:1px solid rgba(214,162,88,.20);
+  border-radius:12px;
+  background:linear-gradient(180deg,rgba(214,162,88,.08),rgba(214,162,88,.02)),#0d0a07;
+  color:#e6bd7d;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.12em;
+  cursor:pointer;
+}
+.jelaModeBtn:hover{border-color:rgba(230,189,122,.38);color:#f0ca89}
+
+.jelaLoginOverlay{
+  position:fixed; inset:0; z-index:1300;
+  display:none; align-items:flex-end; justify-content:center;
+  padding:16px;
+  background:rgba(0,0,0,.72);
+  backdrop-filter:blur(10px);
+}
+.jelaLoginOverlay.open{display:flex}
+.jelaLoginCard{
+  width:min(100%,520px);
+  border:1px solid rgba(214,162,88,.20);
+  border-radius:22px;
+  padding:18px;
+  background:#0f0c09;
+}
+.jelaLoginTitle{
+  color:#f2d19a;
+  font-size:22px;
+  font-weight:850;
+  text-align:center;
+  letter-spacing:.08em;
+}
+.jelaLoginSub{
+  margin-top:5px;
+  color:#837568;
+  font-size:10px;
+  text-align:center;
+}
+.jelaPassword{
+  width:100%;
+  height:48px;
+  margin-top:14px;
+  border:1px solid rgba(214,162,88,.16);
+  border-radius:13px;
+  background:#070604;
+  color:#f7f2ea;
+  padding:0 12px;
+  outline:none;
+  font-size:15px;
+}
+.jelaLoginActions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  margin-top:10px;
+}
+.jelaLoginError{
+  min-height:18px;
+  margin-top:8px;
+  color:#d97770;
+  text-align:center;
+  font-size:9px;
+}
+
+.jelaApp{
+  position:fixed; inset:0; z-index:1200;
+  display:none;
+  flex-direction:column;
+  background:
+    radial-gradient(circle at 50% 10%,rgba(213,159,82,.07),transparent 30%),
+    #050403;
+  color:#eee7dd;
+}
+.jelaApp.open{display:flex}
+.jelaTop{
+  padding:calc(18px + env(safe-area-inset-top)) 18px 8px;
+  text-align:center;
+}
+.jelaTitle{
+  color:#e8bb71;
+  font-size:29px;
+  font-weight:500;
+  letter-spacing:.06em;
+}
+.jelaConnection{
+  margin-top:6px;
+  color:#69d386;
+  font-size:8px;
+  font-weight:850;
+  letter-spacing:.10em;
+}
+.jelaImportantWrap{padding:12px 18px 8px}
+.jelaImportantBtn{
+  width:100%;
+  min-height:110px;
+  border:1px solid rgba(226,181,108,.30);
+  border-radius:22px;
+  background:
+    radial-gradient(circle at 50% 42%,rgba(220,161,78,.10),transparent 55%),
+    linear-gradient(180deg,#17130f,#0a0806);
+  color:#efc77f;
+  font-size:18px;
+  font-weight:760;
+  letter-spacing:.08em;
+  cursor:pointer;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025),0 14px 34px rgba(0,0,0,.28);
+}
+.jelaSetlistLabel{
+  padding:10px 18px 8px;
+  color:#b69562;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.15em;
+}
+.jelaSetlist{
+  flex:1;
+  overflow:auto;
+  margin:0 18px 10px;
+  border:1px solid rgba(214,162,88,.13);
+  border-radius:13px;
+  background:rgba(12,9,6,.68);
+}
+.jelaSong{
+  display:grid;
+  grid-template-columns:34px 1fr;
+  align-items:center;
+  min-height:43px;
+  padding:0 10px;
+  border-bottom:1px solid rgba(255,255,255,.035);
+}
+.jelaSong:last-child{border-bottom:0}
+.jelaSongNum{color:#bd985d;font-size:8px;font-weight:850}
+.jelaSongTitle{
+  overflow:hidden; white-space:nowrap; text-overflow:ellipsis;
+  color:#e9e1d7; font-size:11px; font-weight:730;
+}
+.jelaFooter{
+  padding:9px 18px calc(12px + env(safe-area-inset-bottom));
+  border-top:1px solid rgba(214,162,88,.10);
+  color:#6fd88c;
+  font-size:8px;
+  font-weight:850;
+  text-align:center;
+  letter-spacing:.08em;
+}
+
+.jelaCompose{
+  position:fixed; inset:0; z-index:1400;
+  display:none; align-items:flex-end; justify-content:center;
+  padding:16px;
+  background:rgba(0,0,0,.72);
+  backdrop-filter:blur(10px);
+}
+.jelaCompose.open{display:flex}
+.jelaComposeCard{
+  width:min(100%,520px);
+  border:1px solid rgba(214,162,88,.20);
+  border-radius:22px;
+  padding:18px;
+  background:#0f0c09;
+}
+.jelaComposeTitle{
+  color:#efc77f;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.13em;
+}
+.jelaComposeSub{
+  margin-top:5px;
+  color:#837568;
+  font-size:9px;
+}
+.jelaComposeInput{
+  width:100%;
+  min-height:120px;
+  margin-top:12px;
+  resize:none;
+  border:1px solid rgba(214,162,88,.16);
+  border-radius:13px;
+  background:#070604;
+  color:#f7f2ea;
+  padding:12px;
+  outline:none;
+  font:inherit;
+}
+.jelaComposeActions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  margin-top:10px;
+}
+.jelaBtn{
+  height:44px;
+  border-radius:12px;
+  border:1px solid rgba(214,162,88,.18);
+  background:#0d0a07;
+  color:#c9a86f;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.10em;
+}
+.jelaBtn.primary{
+  background:linear-gradient(180deg,#dfb25f,#aa7a31);
+  color:#160f07;
+  border-color:rgba(255,218,150,.45);
+}
+
+
+/* ===== JELA IMPORTANT ALERT v2.3465 ===== */
+.alertImportantBadge{
+  display:none;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  width:max-content;
+  margin:0 auto 12px;
+  padding:5px 9px;
+  border:1px solid rgba(221,78,72,.42);
+  border-radius:999px;
+  background:rgba(125,24,22,.18);
+  color:#f06d66;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.13em;
+  box-shadow:0 0 14px rgba(210,50,44,.10);
+}
+.alertImportantBadge::before{
+  content:"";
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:#ef4e47;
+  box-shadow:0 0 8px rgba(239,78,71,.42);
+}
+.alertOverlay.fromJela .alertImportantBadge{display:flex}
+.alertOverlay.fromJela .alertTag{color:#efb77a}
+
+
+/* ===== JELA PHONE LAYOUT v2.3466 ===== */
+@media (max-width:600px){
+  .jelaApp{
+    min-height:100dvh;
+    overflow:hidden;
+  }
+
+  .jelaTop{
+    flex:0 0 auto;
+    padding:
+      calc(12px + env(safe-area-inset-top))
+      14px
+      6px;
+  }
+
+  .jelaTitle{
+    font-size:24px;
+  }
+
+  .jelaConnection{
+    margin-top:4px;
+    font-size:7px;
+  }
+
+  .jelaImportantWrap{
+    flex:0 0 auto;
+    padding:8px 14px 8px;
+  }
+
+  .jelaImportantBtn{
+    min-height:84px;
+    border-radius:18px;
+    font-size:15px;
+    line-height:1.15;
+  }
+
+  .jelaSetlistLabel{
+    flex:0 0 auto;
+    padding:7px 14px 6px;
+    font-size:7px;
+  }
+
+  .jelaSetlist{
+    flex:1 1 auto;
+    min-height:0;
+    margin:0 14px 8px;
+    border-radius:12px;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .jelaSong{
+    min-height:39px;
+    grid-template-columns:30px 1fr;
+    padding:0 9px;
+  }
+
+  .jelaSongNum{
+    font-size:7px;
+  }
+
+  .jelaSongTitle{
+    font-size:10px;
+  }
+
+  .jelaFooter{
+    flex:0 0 auto;
+    padding:
+      8px
+      14px
+      calc(10px + env(safe-area-inset-bottom));
+    font-size:7px;
+  }
+
+  .jelaCompose{
+    align-items:flex-end;
+    padding:
+      10px
+      10px
+      calc(10px + env(safe-area-inset-bottom));
+  }
+
+  .jelaComposeCard{
+    width:100%;
+    border-radius:20px;
+    padding:14px;
+  }
+
+  .jelaComposeInput{
+    min-height:96px;
+  }
+}
+
+
+/* ===== BOKI -> MARKO MESSAGE v2.3467 ===== */
+.bokiMessageWrap{
+  padding:8px 16px 12px;
+}
+.bokiMessageWrap.hidden{display:none!important}
+.bokiMessageBtn{
+  width:100%;
+  min-height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  border:1px solid rgba(214,162,88,.18);
+  border-radius:13px;
+  background:linear-gradient(180deg,rgba(214,162,88,.07),rgba(214,162,88,.015)),#0d0a07;
+  color:#d8b67b;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.09em;
+}
+.bokiMessageIcon{
+  font-size:14px;
+  line-height:1;
+}
+.bokiCompose{
+  position:fixed;
+  inset:0;
+  z-index:1450;
+  display:none;
+  align-items:flex-end;
+  justify-content:center;
+  padding:16px;
+  background:rgba(0,0,0,.72);
+  backdrop-filter:blur(10px);
+}
+.bokiCompose.open{display:flex}
+.bokiComposeCard{
+  width:min(100%,520px);
+  border:1px solid rgba(214,162,88,.20);
+  border-radius:22px;
+  padding:18px;
+  background:#0f0c09;
+}
+.bokiComposeTitle{
+  color:#e2bd80;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.12em;
+}
+.bokiComposeSub{
+  margin-top:5px;
+  color:#837568;
+  font-size:9px;
+}
+.bokiComposeInput{
+  width:100%;
+  min-height:110px;
+  margin-top:12px;
+  resize:none;
+  border:1px solid rgba(214,162,88,.16);
+  border-radius:13px;
+  background:#070604;
+  color:#f7f2ea;
+  padding:12px;
+  outline:none;
+  font:inherit;
+}
+.bokiComposeActions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  margin-top:10px;
+}
+.bokiComposeBtn{
+  height:44px;
+  border-radius:12px;
+  border:1px solid rgba(214,162,88,.18);
+  background:#0d0a07;
+  color:#c9a86f;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.10em;
+}
+.bokiComposeBtn.primary{
+  background:linear-gradient(180deg,#d8ad60,#a57832);
+  color:#160f07;
+}
+
+/* ===== BOKI MESSAGE PREMIUM v2.3470 ===== */
+.bokiMessageWrap{padding:0 16px 10px}
+.bokiMessageBtn{
+  position:relative;overflow:hidden;width:100%;min-height:46px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  border:1px solid rgba(214,162,88,.18);border-radius:13px;
+  background:linear-gradient(180deg,rgba(221,177,105,.085),rgba(221,177,105,.018)),#0c0907;
+  color:#d8b67b;font-size:9px;font-weight:900;letter-spacing:.09em;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025),0 8px 20px rgba(0,0,0,.16)
+}
+.bokiMessageBtn::after{
+  content:"";position:absolute;left:12%;right:12%;top:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(233,195,131,.28),transparent)
+}
+.bokiMessageIcon{
+  width:22px;height:22px;display:inline-grid;place-items:center;border-radius:50%;
+  border:1px solid rgba(221,177,105,.18);background:rgba(221,177,105,.04);font-size:12px
+}
+
+/* ===== LOGIN / JELA ALIGNMENT v2.3471 ===== */
+.nameActionsPremium{
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+}
+.namePrimaryRow{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+}
+.namePrimaryRow .nameAction.save,
+.namePrimaryRow .jelaModeBtn{
+  width:100%;
+  height:44px;
+  margin:0;
+  border-radius:12px;
+}
+.namePrimaryRow .jelaModeBtn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+
+/* ===== CLIENT SESSION TIMER v2.3472 ===== */
+.clientLiveCluster{
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+}
+.clientSessionTimer{
+  min-width:74px;text-align:center;color:#6fbd80;font-size:9px;font-weight:850;
+  letter-spacing:.10em;font-variant-numeric:tabular-nums;opacity:.92;
+}
+.clientSessionTimer.idle{color:#665e54;opacity:.65}
+
+
+/* ===== IMPORTANT MESSAGE HARD FIX v2.3493 ===== */
+.alertOverlay{
+  z-index:50000!important;
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100dvh!important;
+}
+.alertOverlay.show{
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+}
+.alertClose{
+  z-index:50001!important;
+}
+
+
+/* VOCAL CHAT PHONE v2.3498 */
+body.vocalMode .awake{display:none!important}
+body.vocalMode #currentTitle{font-size:clamp(44px,13vw,80px)!important;line-height:.95!important}
+body.vocalMode #nextTitle{font-size:clamp(27px,8vw,44px)!important;line-height:1.02!important}
+.vocalChatPanel{width:min(100%,680px);margin:14px auto 0;border:1px solid rgba(214,162,88,.18);border-radius:18px;overflow:hidden;background:rgba(9,7,5,.78)}
+.vocalChatPanel.hidden{display:none!important}
+.vocalChatHead{height:40px;display:flex;align-items:center;justify-content:space-between;padding:0 13px;border-bottom:1px solid rgba(214,162,88,.10)}
+.vocalChatTitle{color:#d9b57a;font-size:9px;font-weight:900;letter-spacing:.14em}
+.vocalChatOnline{color:#67d184;font-size:7px;font-weight:900}
+.vocalChatMessages{max-height:120px;overflow:auto;padding:8px 9px}
+.vocalChatEmpty{padding:16px 8px;text-align:center;color:#5f554b;font-size:9px}
+.vocalChatMsg{padding:7px 8px;margin:4px 0;border-radius:10px;background:rgba(255,255,255,.025)}
+.vocalChatMsgMeta{display:flex;justify-content:space-between;gap:8px;margin-bottom:3px}
+.vocalChatMsgName{color:#d7b477;font-size:8px;font-weight:900}
+.vocalChatMsgTime{color:#655c53;font-size:7px}
+.vocalChatMsgText{color:#eee7dc;font-size:12px;line-height:1.32}
+.vocalChatComposer{display:grid;grid-template-columns:1fr 80px;gap:7px;padding:8px;border-top:1px solid rgba(214,162,88,.10)}
+.vocalChatInput{min-width:0;height:39px;border:1px solid rgba(214,162,88,.14);border-radius:10px;background:#080604;color:#f0e9df;padding:0 10px;outline:none;font-size:12px}
+.vocalChatSend{height:39px;border:1px solid rgba(214,162,88,.22);border-radius:10px;background:linear-gradient(180deg,#d8a85f,#b87934);color:#170f08;font-size:9px;font-weight:950}
+
+
+/* ===== IMPORTANT MESSAGE FULLSCREEN ALL CLIENTS v2.3499 ===== */
+#alertOverlay,
+.alertOverlay{
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100dvh!important;
+  z-index:65000!important;
+}
+#alertOverlay.show,
+.alertOverlay.show{
+  display:flex!important;
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+}
+
+
+/* ===== UNIFIED VOCAL THREAD v2.3501 ===== */
+.vocalChatMsg.fromMaster{
+  border:1px solid rgba(226,174,92,.13)!important;
+  background:linear-gradient(90deg,rgba(226,174,92,.07),rgba(255,255,255,.018))!important;
+}
+.vocalChatMsg.fromMaster .vocalChatMsgName{color:#efbd69!important}
+
+/* ===== VOCAL SINGLE LARGE CHAT v2.3503 ===== */
+body.vocalMode .masterNotesPanel,
+body.vocalMode .notesPanel,
+body.vocalMode .quickNotesPanel,
+body.vocalMode #masterNotesPanel{
+  display:none!important;
+}
+
+body.vocalMode .vocalChatPanel{
+  display:flex!important;
+  flex-direction:column!important;
+  width:100%!important;
+  max-width:720px!important;
+  min-height:270px!important;
+  max-height:38vh!important;
+  margin:16px auto 0!important;
+  border-radius:18px!important;
+  border:1px solid rgba(221,178,107,.24)!important;
+  background:
+    radial-gradient(circle at 85% 0%,rgba(220,174,100,.055),transparent 34%),
+    rgba(8,6,5,.90)!important;
+}
+
+body.vocalMode .vocalChatHead{
+  flex:0 0 44px!important;
+  height:44px!important;
+  padding:0 14px!important;
+}
+
+body.vocalMode .vocalChatTitle{
+  font-size:12px!important;
+  font-weight:950!important;
+  letter-spacing:.12em!important;
+  color:#efc27b!important;
+}
+
+body.vocalMode .vocalChatOnline{
+  font-size:9px!important;
+}
+
+body.vocalMode .vocalChatMessages{
+  flex:1 1 auto!important;
+  min-height:150px!important;
+  max-height:none!important;
+  overflow-y:auto!important;
+  padding:10px!important;
+  scrollbar-width:thin!important;
+}
+
+body.vocalMode .vocalChatMsg{
+  padding:10px 11px!important;
+  margin:6px 0!important;
+  border-radius:11px!important;
+}
+
+body.vocalMode .vocalChatMsgName{
+  font-size:11px!important;
+  font-weight:950!important;
+  letter-spacing:.04em!important;
+}
+
+body.vocalMode .vocalChatMsgTime{
+  font-size:9px!important;
+}
+
+body.vocalMode .vocalChatMsgText{
+  font-size:17px!important;
+  font-weight:650!important;
+  line-height:1.38!important;
+  letter-spacing:.005em!important;
+}
+
+body.vocalMode .vocalChatComposer{
+  flex:0 0 auto!important;
+  grid-template-columns:1fr 88px!important;
+  gap:8px!important;
+  padding:9px!important;
+}
+
+body.vocalMode .vocalChatInput{
+  height:46px!important;
+  padding:0 12px!important;
+  font-size:15px!important;
+  border-radius:11px!important;
+}
+
+body.vocalMode .vocalChatSend{
+  height:46px!important;
+  font-size:10px!important;
+  border-radius:11px!important;
+}
+
+body.vocalMode .vocalChatEmpty{
+  font-size:12px!important;
+}
+
+
+/* ===== ALL CLIENTS BAND CHAT v2.3505 ===== */
+body.bandChatMode .awake{
+  display:none!important;
+}
+body.bandChatMode .masterNotesPanel,
+body.bandChatMode .notesPanel,
+body.bandChatMode .quickNotesPanel,
+body.bandChatMode #masterNotesPanel{
+  display:none!important;
+}
+body.bandChatMode .vocalChatPanel{
+  display:flex!important;
+  flex-direction:column!important;
+  width:100%!important;
+  max-width:720px!important;
+  min-height:270px!important;
+  max-height:38vh!important;
+  margin:16px auto 0!important;
+}
+body.bandChatMode .vocalChatMsgText{
+  font-size:17px!important;
+  line-height:1.38!important;
+}
+body.bandChatMode .vocalChatInput{
+  font-size:15px!important;
+}
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div class="bandSyncBuild" id="bandSyncBuild">v2.3486</div>
+
+<div class="clientConnStatus reconnecting" id="clientConnStatus"><span class="clientConnDot"></span><span id="clientConnText">WAITING</span></div>
+
+<div class="display">
+  <div class="top">
+    <div class="from">UŽIVO OD: MASTER</div>
+    <button class="deviceNameBtn" id="deviceNameBtn"><span id="deviceNameLabel">DISPLAY</span></button>
+    <div class="clientLiveCluster">
+      <div class="live">● LIVE</div>
+      <div class="clientSessionTimer idle" id="clientSessionTimer">00:00:00</div>
+    </div>
+  </div>
+
+  <div class="center">
+    <div class="label">TRENUTNO</div><div class="rule"></div>
+    <div class="current" id="current">ČEKAM MASTER</div>
+
+    <div class="divider"></div>
+
+    <div class="nextLabel">SLEDEĆA PESMA</div>
+    <div class="next" id="next">—</div>
+
+    <div class="clientQueue hidden" id="clientQueue">
+      <div class="clientQueueHead">
+        <span>UP NEXT QUEUE</span>
+        <span id="clientQueueCount">0/5</span>
+      </div>
+      <div class="clientQueueList" id="clientQueueList"></div>
+    </div>
+
+
+    <div class="votePanel hidden" id="votePanel">
+      <div class="voteHeader">GLASANJE ZA SLEDEĆU PESMU</div>
+      <div class="voteLine"><span class="voteNo">PROTIV <b id="noCount">0</b></span><span class="voteYes">ZA <b id="yesCount">0</b></span></div>
+      <div class="voteScale"><i class="voteKnob" id="voteKnob"></i></div>
+      <div class="voteButtons"><button class="voteBtn no" id="voteNoBtn">✕ PROTIV</button><button class="voteBtn yes" id="voteYesBtn">✓ ZA</button></div>
+      <div class="voteMine" id="voteMine">Nisi glasao</div>
+    </div>
+  </div>
+
+  <div class="reactions">
+    <div class="reactionLabel">QUICK REACTIONS</div>
+    <div class="reactionRow" id="reactionRow">
+      <button class="reactionBtn" data-emoji="👍">👍</button>
+      <button class="reactionBtn" data-emoji="🤮">🤮</button>
+      <button class="reactionBtn" data-emoji="⚠️">⚠️</button>
+      <button class="reactionBtn" data-emoji="❓">❓</button>
+      <button class="reactionBtn" data-emoji="🔥">🔥</button>
+    </div>
+  </div>
+
+
+  <div class="bokiMessageWrap hidden" id="bokiMessageWrap">
+    <button class="bokiMessageBtn" id="bokiMessageBtn" type="button">
+      <span class="bokiMessageIcon">✉</span>
+      <span>SEND MESSAGE TO MARKO</span>
+    </button>
+  </div>
+
+  <div class="bottom">
+    <button class="awake" id="awakeBtn">
+      <span class="awakeBox" id="awakeBox"></span>
+      <span class="awakeText"><b>KEEP SCREEN AWAKE</b><span id="awakeSub">Tap to enable</span></span>
+    </button>
+    
+  <section class="masterNotesPanel" id="masterNotesPanel">
+    <div class="masterNotesHead">
+      <div class="masterNotesTitle">💬 PORUKE OD MASTER-A</div>
+      <div class="masterNotesHistoryLabel">HISTORY</div>
+    </div>
+    <div class="masterNotesViewport" id="masterNotesViewport">
+      <div class="masterNotesEmpty" id="masterNotesEmpty">Još nema poruka od Master-a.</div>
+    </div>
+  </section>
+
+  
+<section class="vocalChatPanel hidden" id="vocalChatPanel">
+  <div class="vocalChatHead">
+    <div class="vocalChatTitle">💬 VOCALS CHAT</div>
+    <div class="vocalChatOnline">● LIVE</div>
+  </div>
+  <div class="vocalChatMessages" id="vocalChatMessages">
+    <div class="vocalChatEmpty" id="vocalChatEmpty">Nema poruka.</div>
+  </div>
+  <div class="vocalChatComposer">
+    <input id="vocalChatInput" class="vocalChatInput" placeholder="Napiši poruku..." maxlength="220">
+    <button id="vocalChatSend" class="vocalChatSend" type="button">SEND</button>
+  </div>
+</section>
+
+<div class="footer">BANDSYNC · LIVE DISPLAY</div>
+  </div>
+</div>
+
+<div class="alertOverlay" id="alertOverlay" aria-live="assertive">
+  <button class="alertClose" id="alertClose" aria-label="Close">✕</button>
+  <div class="alertInner"><div class="alertImportantBadge" id="alertImportantBadge">IMPORTANT</div><div class="alertTag" id="alertTag">MESSAGE FROM MASTER</div><div class="alertText" id="alertText"></div></div>
+</div>
+<div class="nameOverlay" id="nameOverlay">
+  <div class="nameSheet">
+    <div class="nameTitle">Device name</div>
+    <div class="nameSub">Npr. DRUMS, BASS, VOCAL, GUITAR…</div>
+    <input class="nameInput" id="deviceNameInput" maxlength="18" placeholder="DISPLAY">
+    <div class="clientRoleBlock">
+      <div class="clientRoleLabel">YOUR ROLE</div>
+      <div class="clientRoleGrid" id="clientRoleGrid">
+        <button type="button" class="clientRoleBtn" data-role="VOCAL">VOCAL</button>
+        <button type="button" class="clientRoleBtn" data-role="GUITAR">GUITAR</button>
+        <button type="button" class="clientRoleBtn" data-role="BASS">BASS</button>
+        <button type="button" class="clientRoleBtn" data-role="DRUMS">DRUMS</button>
+        <button type="button" class="clientRoleBtn" data-role="BOKI">BOKI</button>
+      </div>
+    </div>
+
+    <div class="nameActions nameActionsPremium">
+      <button class="nameAction skip" id="nameSkip">SKIP</button>
+      <div class="namePrimaryRow">
+        <button class="nameAction save" id="nameSave">LOGIN</button>
+        <button class="jelaModeBtn" id="jelaModeBtn" type="button">JELA</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="version">PARTIAL FINAL v13.1 SUPABASE</div>
+
+
+<div class="jelaLoginOverlay" id="jelaLoginOverlay">
+  <div class="jelaLoginCard">
+    <div class="jelaLoginTitle">JELA</div>
+    <div class="jelaLoginSub">Second Master access</div>
+    <input class="jelaPassword" id="jelaPassword" type="password" placeholder="Password" autocomplete="off">
+    <div class="jelaLoginActions">
+      <button class="jelaBtn" id="jelaLoginCancel" type="button">CANCEL</button>
+      <button class="jelaBtn primary" id="jelaLoginEnter" type="button">ENTER</button>
+    </div>
+    <div class="jelaLoginError" id="jelaLoginError"></div>
+  </div>
+</div>
+
+<div class="jelaApp" id="jelaApp">
+  <div class="jelaTop">
+    <div class="jelaTitle">JELA</div>
+    <div class="jelaConnection" id="jelaConnection">● CONNECTING</div>
+  </div>
+  <div class="jelaImportantWrap">
+    <button class="jelaImportantBtn" id="jelaImportantBtn" type="button">⚠︎<br>IMPORTANT MESSAGE</button>
+  </div>
+  <div class="jelaSetlistLabel">PLAYED THIS SESSION</div>
+  <div class="jelaSetlist" id="jelaSetlist"></div>
+  <div class="jelaFooter" id="jelaFooter">MASTER CONNECTED · LIVE</div>
+</div>
+
+<div class="jelaCompose" id="jelaCompose">
+  <div class="jelaComposeCard">
+    <div class="jelaComposeTitle">IMPORTANT MESSAGE</div>
+    <div class="jelaComposeSub">Fullscreen message to everyone except this JELA device.</div>
+    <textarea class="jelaComposeInput" id="jelaComposeInput" placeholder="Type message…"></textarea>
+    <div class="jelaComposeActions">
+      <button class="jelaBtn" id="jelaComposeCancel" type="button">CANCEL</button>
+      <button class="jelaBtn primary" id="jelaComposeSend" type="button">SEND</button>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="bokiCompose" id="bokiCompose">
+  <div class="bokiComposeCard">
+    <div class="bokiComposeTitle">MESSAGE TO MARKO</div>
+    <div class="bokiComposeSub">Only the Master will receive this message.</div>
+    <textarea class="bokiComposeInput" id="bokiComposeInput" placeholder="Type message…"></textarea>
+    <div class="bokiComposeActions">
+      <button class="bokiComposeBtn" id="bokiComposeCancel" type="button">CANCEL</button>
+      <button class="bokiComposeBtn primary" id="bokiComposeSend" type="button">SEND</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+const TOPIC='bandsync-3895bb890a4eb15dcaa9';
+const NTFY='https://ntfy.sh/'+TOPIC;
+
+const SUPABASE_URL='https://iklotwhggbyroqcesrwr.supabase.co';
+const SUPABASE_KEY='sb_publishable_4_zAtOs0nCUziNGAjHhUzA_oHDyuykC';
+const SUPABASE_CHANNEL='bandsync-live-v1';
+const DEVICE_KEY='bs3_device';
+const LAST_STATE_KEY='bs3_last_state';
+const LAST_ALERT_KEY='bs3_last_alert';
+const AWAKE_KEY='bs3_awake';
+const DEVICE_NAME_KEY='bs3_device_name';
+const NOTES_KEY='bs3_master_notes_v1';
+const NOTES_SESSION_KEY='bs3_master_notes_session_v1';
+const NTFY_CHECKPOINT_KEY='bs_ntfy_checkpoint_v1';
+
+const $=id=>document.getElementById(id);
+
+let deviceId='d_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8);
+
+let lastStateUpdated=0;
+let lastStateServerTime=0;
+let lastSyncId=-1;
+let activeMasterSessionId='';
+let initialHistoryPoll=true;
+let lastNtfyMessageId=localStorage.getItem(NTFY_CHECKPOINT_KEY)||'';
+let noteRecoveryTimer=null;
+let currentVoteId='';
+let votes={};
+let alertTimer=null;
+let wakeLock=null;
+let awakeWanted=localStorage.getItem(AWAKE_KEY)==='1';
+let presenceInterval=null;
+let eventSource=null;
+let liveSocket=null;
+let wsReconnectTimer=null;
+let wsFailures=0;
+let lastReactionSentAt=0;
+let lastVoteSentAt=0;
+let masterNotes=[];
+let notesSessionId=localStorage.getItem(NOTES_SESSION_KEY)||'';
+let clientSessionStartedAt=0;
+let clientSessionElapsedBase=0;
+let clientSessionPaused=false;
+let clientSessionActive=false;
+let clientSessionTimerInterval=null;
+let clientSessionSyncedAt=0;
+let lastNoteReceivedAt=0;
+let clientOpenedAt=Date.now();
+let lastStateReceivedAt=0;
+let syncWatchTimer=null;
+let syncPollTimer=null;
+let syncPollBusy=false;
+let lastTransportStatus='';
+let deviceName='';
+let deviceRole='';
+let vocalChatHistory=[];
+let sbClient=null;
+let sbChannel=null;
+let sbSubscribed=false;
+let sbLastMessageAt=0;
+let jelaMode=false;
+let jelaLockChannel=null;
+let jelaLockOwned=false;
+let jelaSetlistCache=[];
+let jelaSessionHistoryCache=[];
+let jelaLastSessionId='';
+let sbReconnectTimer=null;
+
+
+
+
+function resetFreshClientSession(){
+  try{
+    localStorage.removeItem(LAST_STATE_KEY);
+    localStorage.removeItem(LAST_ALERT_KEY);
+    localStorage.removeItem(DEVICE_NAME_KEY);
+    localStorage.removeItem(NTFY_CHECKPOINT_KEY);
+    localStorage.removeItem(DEVICE_KEY);
+    localStorage.removeItem(NOTES_KEY);
+    localStorage.removeItem(NOTES_SESSION_KEY);
+  }catch{}
+
+  masterNotes=[];
+  notesSessionId='';
+  lastNoteReceivedAt=0;
+  lastStateReceivedAt=0;
+  lastReactionSentAt=0;
+  lastVoteSentAt=0;
+  lastTransportStatus='';
+  deviceRole='';
+  jelaSetlistCache=[];
+  jelaSessionHistoryCache=[];
+  jelaLastSessionId='';
+}
+
+
+
+
+function scheduleSupabaseClientReconnect(){
+  if(sbReconnectTimer) return;
+
+  sbReconnectTimer=setTimeout(()=>{
+    sbReconnectTimer=null;
+    if(!supabaseIsLive() && navigator.onLine && (deviceName || deviceRole)){
+      initSupabaseClient();
+    }
+  },1200);
+}
+
+function supabaseIsLive(){
+  return Boolean(sbChannel && sbSubscribed);
+}
+
+function setSupabaseClientStatus(status){
+  if(status==='SUBSCRIBED'){
+    sbSubscribed=true;
+    setTransportStatus('LIVE · SUPABASE');
+    return;
+  }
+
+  if(status==='CHANNEL_ERROR' || status==='TIMED_OUT' || status==='CLOSED'){
+    sbSubscribed=false;
+    setTransportStatus('RECONNECTING');
+    scheduleSupabaseClientReconnect();
+  }
+}
+
+async function trackSupabasePresence(){
+  if(!sbChannel || !sbSubscribed) return false;
+  if(!deviceName && !deviceRole) return false;
+
+  try{
+    const result=await sbChannel.track({
+      kind:'client',
+      deviceId,
+      name:currentDeviceName(),
+      role:currentDeviceRole(),
+      label:currentDeviceLabel(),
+      online_at:new Date().toISOString()
+    });
+    return result==='ok';
+  }catch(e){
+    return false;
+  }
+}
+
+async function requestSupabaseState(){
+  if(!sbChannel || !sbSubscribed) return false;
+
+  try{
+    await sbChannel.send({
+      type:'broadcast',
+      event:'state_request',
+      payload:{
+        deviceId,
+        requestedAt:Date.now()
+      }
+    });
+    return true;
+  }catch(e){
+    return false;
+  }
+}
+
+
+
+function updateJelaSessionFooter(){
+  const footer=$('jelaFooter');
+  if(!footer) return;
+
+  if(jelaLastSessionId){
+    footer.textContent='SESSION CONNECTED · '+jelaSessionHistoryCache.length+' PLAYED';
+  }else{
+    footer.textContent='WAITING FOR START SESSION';
+  }
+}
+
+function renderJelaSetlist(items){
+  const box=$('jelaSetlist');
+  if(!box) return;
+
+  const list=Array.isArray(items)?items:[];
+  jelaSetlistCache=list;
+  box.innerHTML='';
+
+  if(!list.length){
+    box.innerHTML='<div class="masterNotesEmpty" style="padding:18px">Session has not started playing yet.</div>';
+    return;
+  }
+
+  list.forEach((item,index)=>{
+    const row=document.createElement('div');
+    row.className='jelaSong';
+
+    const num=document.createElement('div');
+    num.className='jelaSongNum';
+    num.textContent=String(index+1).padStart(2,'0');
+
+    const title=document.createElement('div');
+    title.className='jelaSongTitle';
+
+    const songTitle=typeof item==='string'
+      ? item
+      : String(item.title||'');
+
+    if(item && typeof item==='object' && item.playedAt){
+      const time=new Date(Number(item.playedAt)).toLocaleTimeString([],{
+        hour:'2-digit',
+        minute:'2-digit'
+      });
+      title.textContent=songTitle+'  ·  '+time;
+    }else{
+      title.textContent=songTitle;
+    }
+
+    row.append(num,title);
+    box.appendChild(row);
+  });
+
+  updateJelaSessionFooter();
+}
+
+function openJelaLogin(){
+  $('jelaPassword').value='';
+  $('jelaLoginError').textContent='';
+  $('jelaLoginOverlay').classList.add('open');
+  setTimeout(()=>$('jelaPassword').focus(),70);
+}
+
+function closeJelaLogin(){
+  $('jelaLoginOverlay').classList.remove('open');
+}
+
+async function enterJelaMode(){
+  if($('jelaPassword').value!=='Jela123'){
+    $('jelaLoginError').textContent='Wrong password';
+    return;
+  }
+
+  if(!window.supabase || !window.supabase.createClient){
+    $('jelaLoginError').textContent='Realtime unavailable';
+    return;
+  }
+
+  if(!sbClient){
+    sbClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
+      auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false},
+      realtime:{params:{eventsPerSecond:20}}
+    });
+  }
+
+  $('jelaLoginError').textContent='Checking device…';
+
+  if(jelaLockChannel){
+    try{ await sbClient.removeChannel(jelaLockChannel); }catch{}
+    jelaLockChannel=null;
+  }
+
+  jelaLockChannel=sbClient.channel('bandsync-jela-lock-v1',{
+    config:{presence:{key:'jela'}}
+  });
+
+  jelaLockChannel
+    .on('presence',{event:'sync'},()=>{
+      if(jelaLockOwned) return;
+      const state=jelaLockChannel.presenceState()||{};
+      const claims=Object.values(state).flat().filter(x=>x && x.kind==='jela');
+      const other=claims.find(x=>String(x.deviceId)!==String(deviceId));
+      if(other){
+        $('jelaLoginError').textContent='JELA is already active on another device.';
+      }
+    })
+    .subscribe(async status=>{
+      if(status!=='SUBSCRIBED') return;
+
+      // Give Presence sync a brief moment before claiming.
+      await new Promise(resolve=>setTimeout(resolve,180));
+
+      const state=jelaLockChannel.presenceState()||{};
+      const claims=Object.values(state).flat().filter(x=>x && x.kind==='jela');
+      const other=claims.find(x=>String(x.deviceId)!==String(deviceId));
+
+      if(other){
+        $('jelaLoginError').textContent='JELA is already active on another device.';
+        return;
+      }
+
+      const result=await jelaLockChannel.track({
+        kind:'jela',
+        deviceId,
+        joinedAt:new Date().toISOString()
+      });
+
+      if(result!=='ok'){
+        $('jelaLoginError').textContent='Could not claim JELA mode.';
+        return;
+      }
+
+      jelaLockOwned=true;
+      jelaMode=true;
+      deviceName='JELA';
+      deviceRole='SECOND MASTER';
+
+      closeJelaLogin();
+      $('nameOverlay').classList.remove('open');
+      $('jelaApp').classList.add('open');
+      $('jelaConnection').textContent='● CONNECTED';
+
+      // Show any already-received history immediately.
+      renderJelaSetlist(jelaSessionHistoryCache);
+
+      initSupabaseClient();
+
+      // Once main channel is live, explicitly ask Master for the COMPLETE
+      // current state so late login still gets every played song since START SESSION.
+      setTimeout(async ()=>{
+        if(sbChannel && sbSubscribed){
+          await requestSupabaseState();
+        }
+      },350);
+    });
+}
+
+
+async function sendClientFallbackPayload(payload,timeoutMs=2800){
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),timeoutMs);
+  try{
+    const r=await fetch(NTFY,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=UTF-8'},
+      body:JSON.stringify(payload),
+      cache:'no-store',
+      signal:controller.signal
+    });
+    return r.ok;
+  }catch{return false;}
+  finally{clearTimeout(timer);}
+}
+
+function openBokiComposer(){
+  $('bokiComposeInput').value='';
+  $('bokiCompose').classList.add('open');
+  setTimeout(()=>$('bokiComposeInput').focus(),60);
+}
+
+function closeBokiComposer(){
+  $('bokiCompose').classList.remove('open');
+}
+
+async function sendBokiMessageToMarko(){
+  const legacyInput=$('bokiComposeInput');
+  const mainInput=$('vocalChatInput');
+
+  if(legacyInput && mainInput && String(legacyInput.value||'').trim()){
+    mainInput.value=String(legacyInput.value||'').trim();
+  }
+
+  const sent=await sendBandChatMessage();
+
+  if(sent){
+    if(legacyInput) legacyInput.value='';
+    closeBokiComposer();
+  }
+
+  return sent;
+}
+
+function openJelaComposer(){
+  $('jelaComposeInput').value='';
+  $('jelaCompose').classList.add('open');
+  setTimeout(()=>$('jelaComposeInput').focus(),60);
+}
+
+function closeJelaComposer(){
+  $('jelaCompose').classList.remove('open');
+}
+
+async function sendJelaImportant(){
+  const input=$('jelaComposeInput'), btn=$('jelaComposeSend');
+  const message=input.value.trim();
+  if(!message) return;
+
+  const old=btn.textContent;
+  btn.disabled=true; btn.textContent='SENDING…';
+
+  const payload={
+    type:'alert',source:'jela',senderDeviceId:deviceId,
+    id:'jela_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8),
+    message,duration:60000,broadcast:true,excludeDeviceIds:[String(deviceId)],updated:Date.now()
+  };
+
+  let sent=false;
+  if(sbChannel && sbSubscribed){
+    try{
+      const result=await Promise.race([
+        sbChannel.send({type:'broadcast',event:'important_message',payload}),
+        new Promise((_,reject)=>setTimeout(()=>reject(new Error('TIMEOUT')),2200))
+      ]);
+      sent=result==='ok'||result===undefined;
+    }catch{sent=false;}
+  }
+  if(!sent) sent=await sendClientFallbackPayload(payload,2800);
+
+  btn.disabled=false; btn.textContent=sent?'SENT ✓':'SEND ERROR';
+  if(sent) setTimeout(()=>{btn.textContent=old;closeJelaComposer();},550);
+  else setTimeout(()=>{btn.textContent=old;},1200);
+}
+
+
+
+function isJelaClient(){
+  return String(deviceRole||'').toUpperCase()==='JELA' ||
+         String(deviceName||'').toUpperCase()==='JELA';
+}
+
+function isBandChatClient(){
+  return !isJelaClient();
+}
+
+function isVocalClient(){
+  return String(deviceRole||'').toUpperCase()==='VOCAL';
+}
+function applyVocalModeUI(){
+  const active=isBandChatClient();
+
+  document.body.classList.toggle('vocalMode',active);
+  document.body.classList.toggle('bandChatMode',active);
+
+  const panel=$('vocalChatPanel');
+  if(panel) panel.classList.toggle('hidden',!active);
+
+  const title=document.querySelector('.vocalChatTitle');
+  if(title && active){
+    title.textContent='BAND CHAT';
+  }
+}
+function renderVocalChat(){
+  const box=$('vocalChatMessages');
+  const empty=$('vocalChatEmpty');
+  if(!box) return;
+  box.querySelectorAll('.vocalChatMsg').forEach(x=>x.remove());
+  if(empty) empty.style.display=vocalChatHistory.length?'none':'block';
+  vocalChatHistory.slice(-12).forEach(item=>{
+    const row=document.createElement('div');
+    row.className='vocalChatMsg';
+    const meta=document.createElement('div');
+    meta.className='vocalChatMsgMeta';
+    const name=document.createElement('div');
+    name.className='vocalChatMsgName';
+    const isMaster=String(item.senderRole||'').toUpperCase()==='MASTER' || String(item.source||'').toLowerCase()==='master';
+    name.textContent=isMaster
+      ? String(item.senderName||'MARKO').toUpperCase()+' (MASTER)'
+      : String(item.senderName||'VOCAL').toUpperCase();
+    row.classList.toggle('fromMaster',isMaster);
+    const time=document.createElement('div');
+    time.className='vocalChatMsgTime';
+    try{time.textContent=new Date(Number(item.updated)||Date.now()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}catch{time.textContent='';}
+    const text=document.createElement('div');
+    text.className='vocalChatMsgText';
+    text.textContent=String(item.message||'');
+    meta.append(name,time);
+    row.append(meta,text);
+    box.appendChild(row);
+  });
+  box.scrollTop=box.scrollHeight;
+}
+
+function receiveUnifiedVocalChat(payload){
+  if(!payload || !String(payload.message||'').trim()) return;
+
+  receiveVocalChat({
+    id:String(payload.id||('uc_'+Date.now())),
+    message:String(payload.message||'').trim(),
+    senderName:String(
+      payload.senderName ||
+      payload.deviceName ||
+      (String(payload.source||'').toLowerCase()==='master' ? 'MARKO' : 'VOCAL')
+    ),
+    senderRole:String(
+      payload.senderRole ||
+      (String(payload.source||'').toLowerCase()==='master' ? 'MASTER' : 'VOCAL')
+    ),
+    source:String(payload.source||'vocal'),
+    updated:Number(payload.updated)||Date.now()
+  });
+}
+
+function receiveVocalChat(payload){
+  if(!payload || !String(payload.message||'').trim()) return;
+
+  const id=String(payload.id||'');
+  if(id && vocalChatHistory.some(x=>String(x.id||'')===id)) return;
+
+  vocalChatHistory.push({
+    id:id||('vc_'+Date.now()),
+    message:String(payload.message).trim(),
+    senderName:String(payload.senderName||payload.deviceName||'VOCAL'),
+    senderRole:String(payload.senderRole||'VOCAL'),
+    source:String(payload.source||'vocal'),
+    updated:Number(payload.updated)||Date.now()
+  });
+
+  if(vocalChatHistory.length>50){
+    vocalChatHistory=vocalChatHistory.slice(-50);
+  }
+
+  renderVocalChat();
+}
+
+async function sendBandChatMessage(){
+  if(!isBandChatClient()) return false;
+
+  const input=$('vocalChatInput');
+  const btn=$('vocalChatSend');
+  if(!input || !btn) return false;
+
+  const message=String(input.value||'').trim();
+  if(!message) return false;
+
+  const payload={
+    type:'band_chat',
+    id:'bchat_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8),
+    source:'client',
+    senderDeviceId:String(deviceId||''),
+    senderName:String(currentDeviceName()||currentDeviceRole()||'CLIENT'),
+    senderRole:String(currentDeviceRole()||'CLIENT').toUpperCase(),
+    message,
+    updated:Date.now()
+  };
+
+  btn.disabled=true;
+  const old=btn.textContent;
+  btn.textContent='...';
+
+  const [rt,fb]=await Promise.all([
+    (async ()=>{
+      if(!sbChannel || !sbSubscribed) return false;
+      try{
+        const result=await Promise.race([
+          sbChannel.send({type:'broadcast',event:'band_chat',payload}),
+          new Promise((_,reject)=>setTimeout(()=>reject(new Error('TIMEOUT')),2200))
+        ]);
+        return result==='ok'||result===undefined;
+      }catch{
+        return false;
+      }
+    })(),
+    sendClientFallbackPayload(payload,3000).catch(()=>false)
+  ]);
+
+  const sent=Boolean(rt||fb);
+
+  if(sent){
+    receiveUnifiedVocalChat(payload);
+    input.value='';
+  }
+
+  btn.disabled=false;
+  btn.textContent=sent?'SENT ✓':'ERROR';
+  setTimeout(()=>{btn.textContent=old||'SEND';},700);
+
+  return sent;
+}
+
+async function sendVocalChat(){ return sendBandChatMessage(); }
+
+function initSupabaseClient(){
+  if((!deviceName && !deviceRole) || !navigator.onLine) return;
+  if(sbChannel && sbSubscribed) return;
+
+  try{
+    const factory=window.supabase;
+    if(!factory || !factory.createClient){
+      console.warn('Supabase library unavailable');
+      return;
+    }
+
+    if(!sbClient){
+      sbClient=factory.createClient(SUPABASE_URL,SUPABASE_KEY,{
+        auth:{
+          persistSession:false,
+          autoRefreshToken:false,
+          detectSessionInUrl:false
+        },
+        realtime:{
+          params:{eventsPerSecond:20}
+        }
+      });
+    }
+
+    if(sbChannel){
+      try{ sbClient.removeChannel(sbChannel); }catch{}
+    }
+
+    sbChannel=sbClient.channel(SUPABASE_CHANNEL,{
+      config:{
+        broadcast:{ack:true,self:false},
+        presence:{key:deviceId}
+      }
+    });
+
+    sbChannel
+      .on('broadcast',{event:'band_chat'},({payload})=>{
+        if(payload && typeof payload==='object') receiveUnifiedVocalChat(payload);
+      })
+      .on('broadcast',{event:'vocal_chat'},({payload})=>{
+        if(payload && typeof payload==='object') receiveUnifiedVocalChat(payload);
+      })
+      .on('broadcast',{event:'master_chat'},({payload})=>{
+        if(payload && typeof payload==='object') receiveUnifiedVocalChat(payload);
+      })
+      .on('broadcast',{event:'quick_note'},({payload})=>{
+        if(!payload || typeof payload!=='object') return;
+
+        if(isBandChatClient()){
+          receiveUnifiedVocalChat({
+            ...payload,
+            type:'master_chat',
+            source:'master',
+            senderName:'MARKO',
+            senderRole:'MASTER'
+          });
+          return;
+        }
+
+        receiveMasterNote(payload,0);
+      })
+      .on('broadcast',{event:'important_message'},({payload})=>{
+        if(!payload || typeof payload!=='object') return;
+
+        const excluded=Array.isArray(payload.excludeDeviceIds)
+          ? payload.excludeDeviceIds.map(String)
+          : [];
+
+        if(excluded.includes(String(deviceId))) return;
+
+        if(
+          payload.broadcast===true ||
+          payload.channel==='important-message' ||
+          payload.priority==='important'
+        ){
+          showFreshAlert({...payload,broadcast:true});
+          return;
+        }
+
+        if(alertIsForThisDevice(payload)){
+          showFreshAlert(payload);
+        }
+      })
+      .on('broadcast',{event:'state'},({payload})=>{
+        if(!payload || typeof payload!=='object') return;
+        sbLastMessageAt=Date.now();
+        applyState(payload,false,0);
+        setTransportStatus('LIVE · SUPABASE');
+      })
+      .subscribe(async status=>{
+        setSupabaseClientStatus(status);
+
+        if(status==='SUBSCRIBED'){
+          await trackSupabasePresence();
+          await requestSupabaseState();
+
+          // Keep old transports available only as fallback while we validate Supabase.
+          setTimeout(()=>{
+            if(!lastStateReceivedAt){
+              pollLatestState();
+            }
+          },1800);
+        }
+      });
+  }catch(e){
+    console.error('Supabase client init failed',e);
+    sbSubscribed=false;
+  }
+}
+
+function websocketIsOpen(){
+  return Boolean(liveSocket && liveSocket.readyState===WebSocket.OPEN);
+}
+
+function sseIsOpen(){
+  return Boolean(eventSource && eventSource.readyState===EventSource.OPEN);
+}
+
+function liveTransportIsOpen(){
+  return websocketIsOpen() || sseIsOpen();
+}
+
+function closeSSE(){
+  if(eventSource){
+    try{ eventSource.close(); }catch{}
+    eventSource=null;
+  }
+}
+
+function closeWebSocket(){
+  if(wsReconnectTimer){
+    clearTimeout(wsReconnectTimer);
+    wsReconnectTimer=null;
+  }
+
+  if(liveSocket){
+    try{
+      liveSocket.onopen=null;
+      liveSocket.onmessage=null;
+      liveSocket.onerror=null;
+      liveSocket.onclose=null;
+      liveSocket.close();
+    }catch{}
+    liveSocket=null;
+  }
+}
+
+function setTransportStatus(text){
+  lastTransportStatus=text||'';
+
+  const live=document.querySelector('.live');
+  if(live){
+    live.title=lastTransportStatus;
+  }
+
+  const wrap=$('clientConnStatus');
+  const label=$('clientConnText');
+  if(!wrap || !label) return;
+
+  wrap.classList.remove('live','fallback','reconnecting','offline');
+
+  let ui='WAITING';
+  let cls='reconnecting';
+
+  if(!navigator.onLine){
+    ui='OFFLINE';
+    cls='offline';
+  }else if(String(text).includes('SUPABASE')){
+    ui='LIVE · REALTIME';
+    cls='live';
+  }else if(String(text).includes('WS')){
+    ui='FALLBACK · WS';
+    cls='fallback';
+  }else if(String(text).includes('SSE')){
+    ui='FALLBACK · SSE';
+    cls='fallback';
+  }else if(String(text).includes('OFFLINE')){
+    ui='OFFLINE';
+    cls='offline';
+  }else{
+    ui='RECONNECTING';
+    cls='reconnecting';
+  }
+
+  wrap.classList.add(cls);
+  label.textContent=ui;
+}
+
+
+function alertIsForThisDevice(d){
+  if(!d || typeof d!=='object') return false;
+
+  // Legacy alerts without targeting are broadcasts.
+  if(d.broadcast===undefined && !Array.isArray(d.targetDeviceIds)){
+    return true;
+  }
+
+  if(d.broadcast===true) return true;
+
+  const targets=Array.isArray(d.targetDeviceIds)
+    ? d.targetDeviceIds.map(String)
+    : [];
+
+  return targets.includes(String(deviceId));
+}
+
+function processEnvelopeObject(env){
+  if(!env || env.event!=='message') return;
+
+  if(env.id){
+    lastNtfyMessageId=String(env.id);
+    try{ localStorage.setItem(NTFY_CHECKPOINT_KEY,lastNtfyMessageId); }catch{}
+  }
+
+  let d=null;
+  try{
+    d=typeof env.message==='string' ? JSON.parse(env.message) : env.message;
+  }catch{
+    return;
+  }
+
+  if(!d || typeof d!=='object') return;
+
+  const isQuickNote=
+    d.type==='note' ||
+    d.channel==='quick-note' ||
+    String(d.id||'').startsWith('note_');
+
+  if(isQuickNote){
+    if(isBandChatClient()){
+      receiveUnifiedVocalChat({
+        ...d,
+        type:'master_chat',
+        source:'master',
+        senderName:'MARKO',
+        senderRole:'MASTER'
+      });
+    }else{
+      receiveMasterNote(d,Number(env.time)||0);
+    }
+    return;
+  }
+
+  if(d.type==='alert'){
+    if(d.broadcast===true || alertIsForThisDevice(d)){
+      showFreshAlert(d);
+    }
+    return;
+  }
+
+  if(d.type==='band_chat' || d.type==='vocal_chat' || d.type==='master_chat'){
+    receiveUnifiedVocalChat(d);
+    return;
+  }
+
+  if(d.type==='vote'){
+    if(d.voteId===currentVoteId && d.deviceId && (d.value==='yes'||d.value==='no')){
+      votes[d.deviceId]=d.value;
+      renderVotes();
+    }
+    return;
+  }
+
+  if(
+    d.type==='state' ||
+    d.source==='master' ||
+    d.protocol===4 ||
+    d.protocol===3 ||
+    d.current!==undefined ||
+    d.next!==undefined
+  ){
+    applyState(d,true,Number(env.time)||0);
+  }
+}
+
+
+function formatClientSessionElapsed(ms){
+  const total=Math.max(0,Math.floor(Number(ms||0)/1000));
+  const h=Math.floor(total/3600);
+  const m=Math.floor((total%3600)/60);
+  const s=total%60;
+  return [h,m,s].map(v=>String(v).padStart(2,'0')).join(':');
+}
+function currentClientSessionElapsed(){
+  const base=Math.max(0,Number(clientSessionElapsedBase)||0);
+
+  if(!clientSessionActive) return base;
+  if(clientSessionPaused) return base;
+  if(!clientSessionSyncedAt) return base;
+
+  return base + Math.max(0,Date.now()-clientSessionSyncedAt);
+}
+function renderClientSessionTimer(){
+  const el=$('clientSessionTimer');
+  if(!el) return;
+  el.textContent=formatClientSessionElapsed(currentClientSessionElapsed());
+  el.classList.toggle('idle',!clientSessionActive);
+}
+function startClientSessionTimerLoop(){
+  if(clientSessionTimerInterval) clearInterval(clientSessionTimerInterval);
+  renderClientSessionTimer();
+  clientSessionTimerInterval=setInterval(renderClientSessionTimer,1000);
+}
+
+function applyState(d,persist=true,serverTime=0){
+  const incomingLiveSessionId=String(d.sessionId||'');
+  if(incomingLiveSessionId && incomingLiveSessionId!==notesSessionId){
+    notesSessionId=incomingLiveSessionId;
+    masterNotes=[];
+    try{
+      localStorage.setItem(NOTES_SESSION_KEY,notesSessionId);
+      localStorage.setItem(NOTES_KEY,'[]');
+    }catch{}
+    renderMasterNotes(false);
+  }
+
+  if(!d || typeof d!=='object') return;
+
+  const incomingSession=String(d.masterSessionId||'');
+  const incomingSync=Number.isFinite(Number(d.syncId)) ? Number(d.syncId) : null;
+  const serverTs=Number(serverTime)||0;
+  const updated=Number(d.updated)||0;
+
+  if(incomingSession){
+    if(activeMasterSessionId && incomingSession!==activeMasterSessionId){
+      // A different Master session may take ownership only if its ntfy
+      // message is at least as new as the latest accepted server message.
+      if(serverTs && lastStateServerTime && serverTs<lastStateServerTime) return;
+
+      activeMasterSessionId=incomingSession;
+      lastSyncId=-1;
+    }else if(!activeMasterSessionId){
+      activeMasterSessionId=incomingSession;
+      lastSyncId=-1;
+    }
+
+    if(incomingSync!==null){
+      if(incomingSync<lastSyncId) return;
+      lastSyncId=incomingSync;
+    }
+
+    if(serverTs){
+      lastStateServerTime=Math.max(lastStateServerTime,serverTs);
+    }
+  }else{
+    // Legacy protocol fallback.
+    if(serverTs){
+      if(serverTs<lastStateServerTime) return;
+      lastStateServerTime=serverTs;
+    }else if(updated){
+      if(updated<lastStateUpdated) return;
+      lastStateUpdated=updated;
+    }
+  }
+
+  lastStateReceivedAt=Date.now();
+  // Master is the sole authority for session time.
+  clientSessionStartedAt=Number(d.sessionStartedAt)||0;
+  clientSessionElapsedBase=Math.max(0,Number(d.sessionElapsedMs)||0);
+  clientSessionActive=Boolean(d.sessionActive);
+  clientSessionPaused=Boolean(d.sessionPaused);
+  clientSessionSyncedAt=Date.now();
+  renderClientSessionTimer();
+
+  const currentText =
+    typeof d.current==='string' && d.current.trim()
+      ? d.current.trim()
+      : 'ČEKAM MASTER';
+
+  const nextText =
+    typeof d.next==='string' && d.next.trim()
+      ? d.next.trim()
+      : '—';
+
+  $('current').textContent=currentText;
+  $('next').textContent=nextText;
+  renderClientQueue(d.queue);
+
+  const incomingJelaHistory=Array.isArray(d.sessionHistory)
+    ? d.sessionHistory
+    : [];
+
+  jelaSessionHistoryCache=incomingJelaHistory;
+  jelaLastSessionId=String(d.sessionId||jelaLastSessionId||'');
+
+  if(jelaMode){
+    renderJelaSetlist(jelaSessionHistoryCache);
+  }
+
+  const incomingVote=d.voteId||'';
+  if(incomingVote!==currentVoteId){
+    currentVoteId=incomingVote;
+    votes={};
+  }
+
+  renderVotes();
+
+  if(persist){
+    try{
+      localStorage.setItem(LAST_STATE_KEY,JSON.stringify({
+        ...d,
+        _serverTime:serverTs,
+        _receivedAt:Date.now()
+      }));
+    }catch{}
+  }
+}
+
+function voteCounts(){
+  let yes=0,no=0;
+  Object.values(votes).forEach(v=>{ if(v==='yes') yes++; else if(v==='no') no++; });
+  return {yes,no,total:yes+no};
+}
+
+
+function renderClientQueue(queue){
+  const box=$('clientQueue');
+  const list=$('clientQueueList');
+  const count=$('clientQueueCount');
+  if(!box || !list || !count) return;
+
+  const items=Array.isArray(queue)
+    ? queue.slice(0,5).filter(item=>item && String(item.title||'').trim())
+    : [];
+
+  count.textContent=items.length+'/5';
+  list.innerHTML='';
+
+  if(!items.length){
+    box.classList.add('hidden');
+    return;
+  }
+
+  box.classList.remove('hidden');
+
+  items.forEach((item,index)=>{
+    const row=document.createElement('div');
+    row.className='clientQueueItem';
+
+    const num=document.createElement('div');
+    num.className='clientQueueNum';
+    num.textContent=String(index+1);
+
+    const title=document.createElement('div');
+    title.className='clientQueueTitle';
+    title.textContent=String(item.title||'');
+
+    row.append(num,title);
+    list.appendChild(row);
+  });
+}
+
+function renderVotes(){
+  const panel=$('votePanel');
+  if(!currentVoteId || $('next').textContent==='—'){
+    panel.classList.add('hidden');
+    return;
+  }
+
+  panel.classList.remove('hidden');
+  const c=voteCounts();
+  $('yesCount').textContent=c.yes;
+  $('noCount').textContent=c.no;
+  $('voteKnob').style.left=(c.total?c.yes/c.total*100:50)+'%';
+
+  const mine=votes[deviceId]||'';
+  $('voteYesBtn').classList.toggle('selected',mine==='yes');
+  $('voteNoBtn').classList.toggle('selected',mine==='no');
+  $('voteMine').textContent=mine==='yes'?'Tvoj glas: ZA':mine==='no'?'Tvoj glas: PROTIV':'Nisi glasao';
+}
+
+async function sendReaction(emoji,buttonEl=null){
+  if(!emoji) return;
+
+  const now=Date.now();
+  if(now-lastReactionSentAt<500) return;
+  lastReactionSentAt=now;
+
+  const payload={
+    emoji,
+    deviceId,
+    deviceName:currentDeviceName(),
+    role:currentDeviceRole(),
+    label:currentDeviceLabel(),
+    updated:Date.now()
+  };
+
+  let sentRealtime=false;
+
+  // Primary: Supabase Realtime.
+  if(sbChannel && sbSubscribed){
+    try{
+      const result=await sbChannel.send({
+        type:'broadcast',
+        event:'reaction',
+        payload
+      });
+      sentRealtime=(result==='ok' || result===undefined);
+    }catch(e){
+      sentRealtime=false;
+    }
+  }
+
+  // Temporary ntfy fallback.
+  if(!sentRealtime){
+    try{
+      await fetch(NTFY,{
+        method:'POST',
+        headers:{'Content-Type':'text/plain;charset=UTF-8'},
+        body:JSON.stringify({
+          type:'reaction',
+          ...payload
+        }),
+        cache:'no-store'
+      });
+    }catch(e){
+      console.error(e);
+    }
+  }
+
+  if(buttonEl){
+    buttonEl.classList.add('sent');
+    setTimeout(()=>buttonEl.classList.remove('sent'),450);
+  }
+}
+
+document.querySelectorAll('.reactionBtn').forEach(btn=>{
+  btn.onclick=()=>{
+    sendReaction(btn.dataset.emoji,btn);
+    if(navigator.vibrate) navigator.vibrate(18);
+  };
+});
+
+async function sendVote(value){
+  if(!currentVoteId || (value!=='yes'&&value!=='no')) return;
+
+  const now=Date.now();
+  if(now-lastVoteSentAt<350) return;
+  lastVoteSentAt=now;
+
+  votes[deviceId]=value;
+  renderVotes();
+
+  const payload={
+    voteId:currentVoteId,
+    deviceId,
+    deviceName:currentDeviceName(),
+    role:currentDeviceRole(),
+    label:currentDeviceLabel(),
+    value,
+    updated:Date.now()
+  };
+
+  let sentRealtime=false;
+
+  // Primary: Supabase Realtime Broadcast.
+  if(sbChannel && sbSubscribed){
+    try{
+      const result=await sbChannel.send({
+        type:'broadcast',
+        event:'vote',
+        payload
+      });
+      sentRealtime=(result==='ok' || result===undefined);
+    }catch(e){
+      sentRealtime=false;
+    }
+  }
+
+  // Temporary fallback during migration.
+  if(!sentRealtime){
+    try{
+      await fetch(NTFY,{
+        method:'POST',
+        headers:{'Content-Type':'text/plain;charset=UTF-8'},
+        body:JSON.stringify({
+          type:'vote',
+          ...payload
+        }),
+        cache:'no-store'
+      });
+    }catch(e){
+      console.error(e);
+    }
+  }
+}
+
+$('voteYesBtn').onclick=()=>sendVote('yes');
+$('voteNoBtn').onclick=()=>sendVote('no');
+
+function clearStaleAlertOverlay(){
+  const overlay=$('alertOverlay');
+  if(overlay) overlay.classList.remove('show');
+  if(alertTimer){
+    clearTimeout(alertTimer);
+    alertTimer=null;
+  }
+}
+
+function dismissAlert(){
+  if(alertTimer) clearTimeout(alertTimer);
+  alertTimer=null;
+  $('alertOverlay').classList.remove('show');
+}
+
+function showFreshAlert(d){
+  if(!d || !String(d.message||'').trim()) return;
+
+  // Quick Notes must never become fullscreen alerts.
+  const legacyNote=
+    d.type==='note' ||
+    d.channel==='quick-note' ||
+    String(d.id||'').startsWith('note_');
+
+  if(legacyNote){
+    receiveMasterNote(d);
+    return;
+  }
+
+  const globalImportant=
+    d.broadcast===true ||
+    d.channel==='important-message' ||
+    d.priority==='important';
+
+  if(!globalImportant && !alertIsForThisDevice(d)) return;
+
+  const now=Date.now();
+  const updated=Number(d.updated)||0;
+  const age=updated ? now-updated : 0;
+  const id=String(d.id||updated||('alert_'+now));
+
+  // Allow delayed/background delivery for two minutes.
+  if(age<0 || age>120000) return;
+
+  // Realtime + fallback use the same id, so the second copy is ignored.
+  if(localStorage.getItem(LAST_ALERT_KEY)===id) return;
+  localStorage.setItem(LAST_ALERT_KEY,id);
+
+  const overlay=$('alertOverlay');
+  const tag=$('alertTag');
+  const text=$('alertText');
+  const badge=$('alertImportantBadge');
+
+  if(!overlay || !text) return;
+
+  const source=String(d.source||'').toLowerCase();
+  const fromJela=source==='jela';
+
+  overlay.classList.toggle('fromJela',fromJela);
+  overlay.classList.add('show');
+  overlay.setAttribute('aria-hidden','false');
+
+  if(tag){
+    tag.textContent=fromJela
+      ? 'MESSAGE FROM JELA'
+      : 'MESSAGE FROM MASTER';
+  }
+
+  if(badge){
+    badge.textContent='IMPORTANT';
+  }
+
+  text.textContent=String(d.message).trim();
+
+  if(alertTimer) clearTimeout(alertTimer);
+  alertTimer=setTimeout(
+    dismissAlert,
+    Math.max(5000,Math.min(Number(d.duration)||60000,60000))
+  );
+}
+
+$('alertClose').onclick=dismissAlert;
+$('alertOverlay').onclick=ev=>{
+  if(ev.target===$('alertOverlay')) dismissAlert();
+};
+
+async function acquireWakeLock(){
+  if(!('wakeLock' in navigator)){
+    $('awakeSub').textContent='Not supported in this browser';
+    return false;
+  }
+  try{
+    wakeLock=await navigator.wakeLock.request('screen');
+    wakeLock.addEventListener('release',()=>{
+      wakeLock=null;
+      
+updateAwakeUI();
+    });
+    return true;
+  }catch(e){
+    console.error(e);
+    return false;
+  }
+}
+
+async function setAwakeWanted(on){
+  awakeWanted=!!on;
+  localStorage.setItem(AWAKE_KEY,awakeWanted?'1':'0');
+  if(awakeWanted){
+    await acquireWakeLock();
+  }else if(wakeLock){
+    try{ await wakeLock.release(); }catch{}
+    wakeLock=null;
+  }
+  updateAwakeUI();
+}
+
+function updateAwakeUI(){
+  $('awakeBox').textContent=(awakeWanted&&wakeLock)?'✓':'';
+  $('awakeSub').textContent=awakeWanted?(wakeLock?'Screen will stay awake':'Waiting for browser permission'):'Tap to enable';
+}
+
+$('awakeBtn').onclick=()=>setAwakeWanted(!awakeWanted);
+
+document.addEventListener('visibilitychange',async()=>{
+  if(document.visibilityState==='visible'){
+    initialHistoryPoll=true;
+    sendPresence();
+    ensureConnection();
+    pollLatestState();
+
+    if(awakeWanted && !wakeLock){
+      await acquireWakeLock();
+      updateAwakeUI();
+    }
+  }
+});
+
+
+
+function loadMasterNotes(){
+  try{
+    const parsed=JSON.parse(localStorage.getItem(NOTES_KEY)||'[]');
+    masterNotes=Array.isArray(parsed)?parsed.slice(-3):[];
+  }catch{
+    masterNotes=[];
+  }
+
+  renderMasterNotes(false);
+}
+
+function saveMasterNotes(){
+  try{
+    localStorage.setItem(NOTES_KEY,JSON.stringify(masterNotes.slice(-3)));
+    if(notesSessionId){
+      localStorage.setItem(NOTES_SESSION_KEY,notesSessionId);
+    }
+  }catch{}
+}
+
+function formatNoteTime(ts){
+  const d=new Date(Number(ts)||Date.now());
+  return d.toLocaleTimeString([],{
+    hour:'2-digit',
+    minute:'2-digit'
+  });
+}
+
+function renderMasterNotes(scrollToLatest=true){
+  const box=$('masterNotesViewport');
+  if(!box) return;
+
+  box.innerHTML='';
+
+  if(!masterNotes.length){
+    const empty=document.createElement('div');
+    empty.className='masterNotesEmpty';
+    empty.textContent='Još nema poruka od Master-a.';
+    box.appendChild(empty);
+    return;
+  }
+
+  masterNotes.forEach((note,index)=>{
+    const item=document.createElement('div');
+    item.className='masterNoteItem'+(index===masterNotes.length-1?' newest':'');
+
+    const time=document.createElement('div');
+    time.className='masterNoteTime';
+    time.textContent=formatNoteTime(note.updated);
+
+    const body=document.createElement('div');
+    body.className='masterNoteBody';
+
+    const author=document.createElement('div');
+    author.className='masterNoteAuthor';
+    author.textContent='Marko (Master)';
+
+    const text=document.createElement('div');
+    text.className='masterNoteText';
+    text.textContent=note.message||'';
+
+    body.append(author,text);
+    item.append(time,body);
+    box.appendChild(item);
+  });
+
+  if(scrollToLatest){
+    requestAnimationFrame(()=>{
+      box.scrollTop=box.scrollHeight;
+    });
+  }
+}
+
+function receiveMasterNote(d,serverTime=0){
+  if(!d || !String(d.message||'').trim()) return;
+  if(Number(d.updated||0) && Number(d.updated||0)<clientOpenedAt) return;
+  const noteSessionId=String(d.sessionId||'');
+  if(noteSessionId && notesSessionId && noteSessionId!==notesSessionId) return;
+
+  // ntfy env.time is Unix seconds; use it as the canonical message time.
+  // Fall back to sender timestamp only for legacy messages.
+  const noteTime=serverTime
+    ? Number(serverTime)*1000
+    : (Number(d.updated)||Date.now());
+
+  const id=String(
+    d.id ||
+    ('note_'+noteTime+'_'+String(d.message).slice(0,24))
+  );
+
+  // History/SSE can replay the same note. Never duplicate it.
+  if(masterNotes.some(n=>n.id===id)) return;
+
+  lastNoteReceivedAt=Date.now();
+  masterNotes.push({
+    id,
+    message:String(d.message).trim(),
+    updated:noteTime
+  });
+
+  // Only the last 3 Quick Notes are kept for this live session.
+  if(masterNotes.length>3){
+    masterNotes=masterNotes.slice(-3);
+  }
+
+  saveMasterNotes();
+  renderMasterNotes(true);
+}
+
+
+function currentDeviceRole(){
+  return (deviceRole||'').trim().toUpperCase();
+}
+
+function currentDeviceLabel(){
+  const name=currentDeviceName();
+  const role=currentDeviceRole();
+
+  if(name && role) return name+' · '+role;
+  if(name) return name;
+  if(role) return role;
+  return 'DISPLAY';
+}
+
+function renderClientRoleSelection(){
+  document.querySelectorAll('.clientRoleBtn').forEach(btn=>{
+    btn.classList.toggle('selected',btn.dataset.role===deviceRole);
+  });
+
+  const save=$('nameSave');
+  if(save){
+    const ready=Boolean(
+      ($('deviceNameInput') && $('deviceNameInput').value.trim()) ||
+      deviceRole
+    );
+    save.classList.toggle('roleReady',ready);
+  }
+}
+
+function currentDeviceName(){
+  return (deviceName||'').trim();
+}
+
+
+function updateBokiMessageUI(){
+  const wrap=$('bokiMessageWrap');
+  if(wrap) wrap.classList.add('hidden');
+}
+
+function updateDeviceNameUI(){
+  $('deviceNameLabel').textContent=currentDeviceLabel();
+
+  updateBokiMessageUI();
+}
+
+async function sendPresence(){
+  if(!deviceName && !deviceRole) return;
+
+  try{
+    await fetch(NTFY,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=UTF-8'},
+      body:JSON.stringify({
+        type:'presence',
+        deviceId,
+        name:currentDeviceName(),
+        role:currentDeviceRole(),
+        label:currentDeviceLabel(),
+        updated:Date.now()
+      }),
+      cache:'no-store'
+    });
+  }catch(e){}
+}
+
+function openDeviceNameEditor(firstRun=false){
+  $('deviceNameInput').value=deviceName||'';
+  deviceRole='';
+  renderClientRoleSelection();
+  $('nameOverlay').classList.add('open');
+  setTimeout(()=>$('deviceNameInput').focus(),80);
+}
+
+function saveDeviceName(){
+  const value=$('deviceNameInput').value.replace(/\s+/g,' ').trim().toUpperCase();
+
+  // Name-only, role-only, or both are valid.
+  if(!value && !deviceRole) return;
+
+  deviceName=value;
+
+  $('nameOverlay').classList.remove('open');
+  updateDeviceNameUI();
+
+  initSupabaseClient();
+
+  // Temporary fallbacks during migration.
+  sendPresence();
+  setTimeout(()=>{
+    if(!supabaseIsLive()){
+      connectWebSocket();
+      connectSSEFallback();
+      pollLatestState();
+    }
+  },1800);
+
+  recoverRecentNotes();
+
+  if(awakeWanted && !wakeLock){
+    acquireWakeLock().then(updateAwakeUI);
+  }
+}
+
+
+$('deviceNameBtn').onclick=()=>openDeviceNameEditor(false);
+$('nameOverlay').onclick=ev=>{
+  if(ev.target===$('nameOverlay') && (deviceName || deviceRole)){
+    $('nameOverlay').classList.remove('open');
+  }
+};
+
+document.querySelectorAll('.clientRoleBtn').forEach(btn=>{
+  btn.onclick=()=>{
+    deviceRole=btn.dataset.role||'';
+    renderClientRoleSelection();
+  };
+});
+
+$('deviceNameInput').addEventListener('input',renderClientRoleSelection);
+
+$('nameSave').onclick=saveDeviceName;
+
+$('nameSkip').onclick=()=>{
+  $('deviceNameInput').focus();
+};
+
+$('deviceNameInput').addEventListener('keydown',ev=>{
+  if(ev.key==='Enter') saveDeviceName();
+});
+
+
+
+async function pollLatestState(){
+  if(!deviceName && !deviceRole) return;
+  if(syncPollBusy || document.visibilityState!=='visible' || !navigator.onLine) return;
+  syncPollBusy=true;
+
+  try{
+    const sinceValue=lastNtfyMessageId || '1h';
+
+    let r=await fetch(
+      NTFY+'/json?poll=1&since='+encodeURIComponent(sinceValue)+'&_='+Date.now(),
+      {
+        cache:'no-store',
+        headers:{}
+      }
+    );
+
+    if(!r.ok && lastNtfyMessageId){
+      lastNtfyMessageId='';
+      try{ localStorage.removeItem(NTFY_CHECKPOINT_KEY); }catch{}
+
+      r=await fetch(
+        NTFY+'/json?poll=1&since=1h&_='+Date.now(),
+        {
+          cache:'no-store',
+          headers:{}
+        }
+      );
+    }
+
+    if(!r.ok) throw new Error('HTTP '+r.status);
+
+    const text=await r.text();
+    const lines=text.split(/\r?\n/).filter(Boolean);
+
+    for(const line of lines){
+      try{
+        const env=JSON.parse(line);
+        processEnvelopeObject(env);
+      }catch{}
+    }
+
+    initialHistoryPoll=false;
+
+    setTransportStatus(
+      eventSource && eventSource.readyState===EventSource.OPEN
+        ? 'LIVE SSE connected'
+        : 'Fallback sync connected'
+    );
+  }catch(e){
+    setTransportStatus('Waiting for sync…');
+  }finally{
+    syncPollBusy=false;
+  }
+}
+
+
+async function recoverRecentNotes(){
+  if(!deviceName && !deviceRole) return;
+  if(document.visibilityState!=='visible' || !navigator.onLine) return;
+
+  try{
+    const r=await fetch(
+      NTFY+'/json?poll=1&since=10m&_notes='+Date.now(),
+      {cache:'no-store'}
+    );
+
+    if(!r.ok) return;
+
+    const text=await r.text();
+    const lines=text.split(/\r?\n/).filter(Boolean);
+
+    for(const line of lines){
+      let env=null;
+      try{ env=JSON.parse(line); }catch{ continue; }
+      if(!env || env.event!=='message') continue;
+
+      let d=null;
+      try{
+        d=typeof env.message==='string' ? JSON.parse(env.message) : env.message;
+      }catch{
+        continue;
+      }
+
+      if(!d || typeof d!=='object') continue;
+
+      const isQuickNote=
+        d.type==='note' ||
+        d.channel==='quick-note' ||
+        String(d.id||'').startsWith('note_');
+
+      if(isQuickNote){
+        // receiveMasterNote deduplicates by the note's own stable ID.
+        receiveMasterNote(d,Number(env.time)||0);
+      }
+    }
+  }catch{}
+}
+
+function startNoteRecovery(){
+  if(noteRecoveryTimer) clearInterval(noteRecoveryTimer);
+
+  recoverRecentNotes();
+
+  noteRecoveryTimer=setInterval(()=>{
+    if(document.visibilityState!=='visible' || !deviceName) return;
+
+    if(liveTransportIsOpen()){
+      // Safety scan only; live transport should deliver instantly.
+      recoverRecentNotes();
+    }else{
+      // No realtime channel: recover aggressively.
+      recoverRecentNotes();
+      pollLatestState();
+    }
+  },5000);
+}
+
+
+function connectWebSocket(){
+  if((!deviceName && !deviceRole) || !navigator.onLine) return;
+  if(websocketIsOpen()) return;
+
+  closeWebSocket();
+
+  const sinceValue=lastNtfyMessageId || '2m';
+  const wsUrl=
+    'wss://ntfy.sh/'+
+    encodeURIComponent(TOPIC)+
+    '/ws?since='+encodeURIComponent(sinceValue)+
+    '&_='+Date.now();
+
+  try{
+    liveSocket=new WebSocket(wsUrl);
+  }catch(e){
+    liveSocket=null;
+    connectSSEFallback();
+    return;
+  }
+
+  liveSocket.onopen=()=>{
+    wsFailures=0;
+    setTransportStatus('LIVE · WS');
+
+    // WebSocket is authoritative while open.
+    closeSSE();
+
+    sendPresence();
+    pollLatestState();
+  };
+
+  liveSocket.onmessage=ev=>{
+    try{
+      const env=JSON.parse(ev.data);
+      processEnvelopeObject(env);
+    }catch(e){}
+  };
+
+  liveSocket.onerror=()=>{
+    setTransportStatus('WS ERROR · FALLBACK');
+  };
+
+  liveSocket.onclose=()=>{
+    liveSocket=null;
+    wsFailures++;
+
+    if((!deviceName && !deviceRole) || !navigator.onLine) return;
+
+    // Immediately keep the client live through SSE.
+    connectSSEFallback();
+
+    if(wsReconnectTimer) clearTimeout(wsReconnectTimer);
+    const delay=Math.min(8000,1500+(wsFailures*750));
+
+    wsReconnectTimer=setTimeout(()=>{
+      wsReconnectTimer=null;
+      if(deviceName && navigator.onLine && !websocketIsOpen()){
+        connectWebSocket();
+      }
+    },delay);
+  };
+}
+
+function connectSSEFallback(){
+  if((!deviceName && !deviceRole) || !navigator.onLine) return;
+  if(websocketIsOpen() || sseIsOpen()) return;
+
+  closeSSE();
+
+  const sinceValue=lastNtfyMessageId || '2m';
+  const url=
+    NTFY+
+    '/sse?since='+encodeURIComponent(sinceValue)+
+    '&_='+Date.now();
+
+  eventSource=new EventSource(url);
+
+  eventSource.onopen=()=>{
+    setTransportStatus('FALLBACK · SSE');
+    sendPresence();
+    pollLatestState();
+  };
+
+  eventSource.onerror=()=>{
+    setTransportStatus('RECONNECTING');
+  };
+
+  eventSource.onmessage=ev=>{
+    try{
+      const env=JSON.parse(ev.data);
+      processEnvelopeObject(env);
+    }catch(e){}
+  };
+}
+
+function startFallbackSync(){
+  if(syncPollTimer) clearInterval(syncPollTimer);
+
+  syncPollTimer=setInterval(()=>{
+    if(document.visibilityState!=='visible' || (!deviceName && !deviceRole)) return;
+
+    const silentFor=
+      lastStateReceivedAt
+        ? Date.now()-lastStateReceivedAt
+        : Infinity;
+
+    if(supabaseIsLive()){
+      if(silentFor>30000){
+        requestSupabaseState();
+      }
+      return;
+    }
+
+    if(!liveTransportIsOpen() || silentFor>25000){
+      pollLatestState();
+    }
+  },5000);
+}
+
+function startSyncWatchdog(){
+  if(syncWatchTimer) clearInterval(syncWatchTimer);
+
+  syncWatchTimer=setInterval(()=>{
+    if(document.visibilityState!=='visible' || (!deviceName && !deviceRole)) return;
+
+    const silentFor=
+      lastStateReceivedAt
+        ? Date.now()-lastStateReceivedAt
+        : Infinity;
+
+    if(supabaseIsLive()){
+      if(silentFor>30000){
+        requestSupabaseState();
+      }
+      return;
+    }
+
+    initSupabaseClient();
+
+    if(websocketIsOpen()) return;
+
+    if(sseIsOpen()){
+      connectWebSocket();
+      return;
+    }
+
+    connectWebSocket();
+    connectSSEFallback();
+    pollLatestState();
+  },7000);
+}
+
+function ensureConnection(){
+  if((!deviceName && !deviceRole) || !navigator.onLine) return;
+
+  if(!supabaseIsLive()){
+    initSupabaseClient();
+  }
+
+  // Legacy transport remains fallback only.
+  if(!supabaseIsLive() && !websocketIsOpen()){
+    connectWebSocket();
+  }
+
+  if(!supabaseIsLive() && !websocketIsOpen() && !sseIsOpen()){
+    connectSSEFallback();
+  }
+}
+
+function connect(){
+  ensureConnection();
+}
+
+resetFreshClientSession();
+setTransportStatus('RECONNECTING');
+updateDeviceNameUI();
+
+// Always identify this client before joining the live session.
+setTimeout(()=>openDeviceNameEditor(true),180);
+
+if(presenceInterval) clearInterval(presenceInterval);
+presenceInterval=setInterval(sendPresence,10000);
+
+updateAwakeUI();
+startSyncWatchdog();
+startFallbackSync();
+startNoteRecovery();
+
+
+
+window.addEventListener('offline',()=>{
+  setTransportStatus('OFFLINE');
+});
+
+// bandsync-display-hard-resync-v23470
+function clientHardResync(){
+  if(!navigator.onLine || (!deviceName && !deviceRole)) return;
+  initialHistoryPoll=true;
+  ensureConnection();
+  if(!supabaseIsLive()) pollLatestState();
+  recoverRecentNotes();
+  sendPresence();
+}
+window.addEventListener('online',clientHardResync);
+window.addEventListener('focus',clientHardResync);
+
+const jelaModeBtn=$('jelaModeBtn');
+if(jelaModeBtn) jelaModeBtn.onclick=openJelaLogin;
+
+const jelaLoginCancel=$('jelaLoginCancel');
+if(jelaLoginCancel) jelaLoginCancel.onclick=closeJelaLogin;
+
+const jelaLoginEnter=$('jelaLoginEnter');
+if(jelaLoginEnter) jelaLoginEnter.onclick=enterJelaMode;
+
+const jelaPassword=$('jelaPassword');
+if(jelaPassword){
+  jelaPassword.addEventListener('keydown',ev=>{
+    if(ev.key==='Enter'){
+      ev.preventDefault();
+      enterJelaMode();
+    }
+  });
+}
+
+const jelaImportantBtn=$('jelaImportantBtn');
+if(jelaImportantBtn) jelaImportantBtn.onclick=openJelaComposer;
+
+const jelaComposeCancel=$('jelaComposeCancel');
+if(jelaComposeCancel) jelaComposeCancel.onclick=closeJelaComposer;
+
+const jelaComposeSend=$('jelaComposeSend');
+if(jelaComposeSend) jelaComposeSend.onclick=sendJelaImportant;
+
+
+
+
+// bandsync-boki-message-bind-v23470
+const bokiMessageBtn=$('bokiMessageBtn');
+if(bokiMessageBtn) bokiMessageBtn.onclick=openBokiComposer;
+const bokiComposeCancel=$('bokiComposeCancel');
+if(bokiComposeCancel) bokiComposeCancel.onclick=closeBokiComposer;
+const bokiComposeSend=$('bokiComposeSend');
+if(bokiComposeSend) bokiComposeSend.onclick=sendBokiMessageToMarko;
+
+startClientSessionTimerLoop();
+
+
+// bandsync-enter-send-v23474
+function bindClientEnterToSend(input,sendFn){
+  if(!input || typeof sendFn!=='function') return;
+
+  input.addEventListener('keydown',ev=>{
+    if(ev.key!=='Enter' || ev.shiftKey || ev.isComposing) return;
+
+    ev.preventDefault();
+    ev.stopPropagation();
+
+    const value=String(input.value||'').trim();
+    if(!value) return;
+
+    sendFn();
+  });
+}
+
+bindClientEnterToSend($('jelaComposeInput'),sendJelaImportant);
+bindClientEnterToSend($('bokiComposeInput'),sendBokiMessageToMarko);
+
+// bandsync-vocal-chat-bind-v23498
+const vocalChatSend=$('vocalChatSend');
+if(vocalChatSend) vocalChatSend.onclick=sendVocalChat;
+const vocalChatInput=$('vocalChatInput');
+if(vocalChatInput){
+  vocalChatInput.addEventListener('keydown',ev=>{
+    if(ev.key==='Enter'&&!ev.shiftKey&&!ev.isComposing){
+      ev.preventDefault();
+      sendVocalChat();
+    }
+  });
+}
+document.addEventListener('click',ev=>{
+  const b=ev.target&&ev.target.closest?ev.target.closest('.clientRoleBtn'):null;
+  if(b) setTimeout(applyVocalModeUI,10);
+});
+setTimeout(()=>{applyVocalModeUI();renderVocalChat();},30);
+
+// bandsync-global-esc-fullscreen-client-v23506
+window.addEventListener('keydown',ev=>{
+  if(ev.key!=='Escape' || ev.isComposing) return;
+
+  let closed=false;
+
+  const alert=$('alertOverlay');
+  if(alert && alert.classList.contains('show')){
+    dismissAlert();
+    closed=true;
+  }
+
+  const jelaComposer=$('jelaComposerOverlay');
+  if(jelaComposer && (
+    jelaComposer.classList.contains('open') ||
+    jelaComposer.classList.contains('show')
+  )){
+    if(typeof closeJelaComposer==='function'){
+      closeJelaComposer();
+    }else{
+      jelaComposer.classList.remove('open','show');
+    }
+    closed=true;
+  }
+
+  const bokiComposer=$('bokiMessageOverlay');
+  if(bokiComposer && (
+    bokiComposer.classList.contains('open') ||
+    bokiComposer.classList.contains('show')
+  )){
+    if(typeof closeBokiComposer==='function'){
+      closeBokiComposer();
+    }else{
+      bokiComposer.classList.remove('open','show');
+    }
+    closed=true;
+  }
+
+  if(closed){
+    ev.preventDefault();
+    ev.stopPropagation();
+    if(typeof ev.stopImmediatePropagation==='function'){
+      ev.stopImmediatePropagation();
+    }
+  }
+},true);
+</script>
+</body>
+</html>
